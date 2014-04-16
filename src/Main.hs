@@ -24,6 +24,16 @@ field :: (Num a,Ord a) => a -> Int -> Either String (Field a)
 field val width | val < 0 || val > (2^width-1) = Left "Value not in bounds"
 				| otherwise 				   = Right $ F val width
 
+--TODO:binary-bits package
+data StringField = SF {sfvalue :: B.ByteString
+					  ,sfwidth :: Int} --in bytes
+					  deriving (Show)
+
+stringField :: [Word8] -> Int -> Either String StringField
+stringField val width | length val /= width = Left "Incorrect length"
+					  | otherwise 			= Right $ SF (B.pack val) width
+
 class Header a where
 	toBytes :: a -> B.ByteString
 	fromBytes :: B.ByteString -> a
+

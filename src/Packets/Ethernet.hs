@@ -14,7 +14,7 @@ import Data.Binary.Get
 import Control.Lens
 import Main
 --representation:
-data Ethernet = Ethernet 	{_dest 		:: B.ByteString
+data Ethernet = Ethernet 	{_dest 		:: StringField
 			   			  	,_source 	:: B.ByteString
 			   			  	,_ethType 	:: Word16}
 			   			  		deriving (Show)
@@ -38,4 +38,4 @@ instance Header Ethernet where
 macToBS :: MAC -> B.ByteString
 macToBS (M bs) = B.pack bs
 
-ethernet = Ethernet (macToBS $ M [0,0,0,0,0,0]) (macToBS $ M [0,0,0,0,0,0]) 0x800 0
+ethernet = Ethernet (macToBS $ M [0,0,0,0,0,0]) (macToBS $ M [0,0,0,0,0,0]) 0x800
