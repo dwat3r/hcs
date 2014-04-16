@@ -1,0 +1,52 @@
+Name:            hcs
+Version:         0.1
+Cabal-Version:   >= 1.10
+Build-Type:      Simple
+License:         GPL
+License-File:    COPYING
+Author:          Oliver Hechtl <hechtloliver@gmail.com>
+Maintainer:      Oliver Hechtl <hechtloliver@gmail.com>
+Homepage:        http://github.com/dwat3r/hcs
+Category:        Network
+Tested-With:     GHC == 7.6.3
+Synopsis:        Packet Construction Set in Haskell
+Description:     TODO 
+                 Pandoc is a Haskell library for converting from one markup
+                 format to another, and a command-line tool that uses
+                 this library. It can read markdown and (subsets of) HTML,
+                 reStructuredText, LaTeX, DocBook, MediaWiki markup, Haddock
+                 markup, OPML, and Textile, and it can write markdown,
+                 reStructuredText, HTML, LaTeX, ConTeXt, Docbook, OPML,
+                 OpenDocument, ODT, Word docx, RTF, MediaWiki, Textile,
+                 groff man pages, plain text, Emacs Org-Mode, AsciiDoc,
+                 EPUB (v2 and v3), FictionBook2, and several kinds of
+                 HTML/javascript slide shows (S5, Slidy, Slideous, DZSlides,
+                 reveal.js).
+                 .
+                 Pandoc extends standard markdown syntax with footnotes,
+                 embedded LaTeX, definition lists, tables, and other
+                 features. A compatibility mode is provided for those
+                 who need a drop-in replacement for Markdown.pl.
+                 .
+                 In contrast to existing tools for converting markdown
+                 to HTML, which use regex substitutions, pandoc has
+                 a modular design: it consists of a set of readers,
+                 which parse text in a given format and produce a native
+                 representation of the document, and a set of writers,
+                 which convert this native representation into a target
+                 format. Thus, adding an input or output format requires
+                 only adding a reader or writer.
+Data-Files:
+Source-repository head
+  type:          git
+  location:      git://github.com/dwat3r/hcs.git
+
+Library
+  Build-Depends: base,
+                 pcap
+  Default-Language: Haskell98
+  hs-Source-Dirs:  src
+
+  Exposed-Modules: 
+  Other-Modules:   
+  Buildable:       True
