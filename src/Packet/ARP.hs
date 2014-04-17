@@ -7,8 +7,8 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
-import Packets.Packets
-import Packets.Ethernet
+import Packet.Packet
+import Packet.Ethernet
 
 data ARP = ARP 	{_hrd 	:: Word16
 	    		,_pro 	:: Word16
@@ -23,13 +23,15 @@ data ARP = ARP 	{_hrd 	:: Word16
 
 makeLenses ''ARP
 
-instance Header (Ethernet :+: ARP) where
+instance Header ARP where
 	toBytes a = undefined
 	fromBytes a = undefined
 
-instance Header ARP where
+instance Header (Ethernet :+: ARP) where
 	toBytes a = undefined
 	fromBytes a = undefined
 
 instance Attachable Ethernet ARP where
 	e +++ a = undefined
+
+arp = ARP 0 0 0 0 0 B.empty 0 B.empty 0

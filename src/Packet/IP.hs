@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
 module Packet.IP (
 		IP(..),
 		toBytes,
@@ -10,22 +10,23 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
+import Packet.Packet
 import Packet.Ethernet
 --representation:
 --fields smaller than a byte stores values as big endian
-data IP = IP 	{_version 	:: Word8,
-        	  	_hlen 		:: Word8,
-        		_tos 		:: Word8,
-        		_len 		:: Word16,
-        		_ipID 		:: Word16,
-        		_flags 		:: Word8,
-        		_offset 	:: Word16,
-        		_ttl 		:: Word8,
-        		_protocol 	:: Word8,
-        		_checksum 	:: Word16,
-        		_source 	:: Word32,
-        		_dest 		:: Word32,
-        		_options 	:: B.ByteString}
+data IP = IP 	{_version 	:: Word8
+        	  	,_hlen 		:: Word8
+        		,_tos 		:: Word8
+        		,_len 		:: Word16
+        		,_ipID 		:: Word16
+        		,_flags 	:: Word8
+        		,_offset 	:: Word16
+        		,_ttl 		:: Word8
+        		,_protocol 	:: Word8
+        		,_checksum 	:: Word16
+        		,_source 	:: Word32
+        		,_dest 		:: Word32
+        		,_options 	:: B.ByteString}
         			deriving (Show)
 --lens magic
 makeLenses ''IP
@@ -44,5 +45,8 @@ instance Header IP where
 		putWord32be $ i^.source
 		putWord32be $ i^.dest
 		putLazyByteString $ i^.options
+
+instance Attachable Ethernet IP where
+
 
 ip = IP

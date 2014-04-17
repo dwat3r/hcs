@@ -13,7 +13,7 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
-import Packet.Packets
+import Packet.Packet
 --representation:
 data Ethernet = Ethernet 	{_dest 		:: B.ByteString
 			   			  	,_source 	:: B.ByteString
