@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Packets.Ethernet (
+--exports:
+module Packet.Ethernet (
 		Ethernet(..),
 		MAC(..),
 		macToBS,
@@ -12,9 +13,9 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
-import Main
+import Packet.Packets
 --representation:
-data Ethernet = Ethernet 	{_dest 		:: StringField
+data Ethernet = Ethernet 	{_dest 		:: B.ByteString
 			   			  	,_source 	:: B.ByteString
 			   			  	,_ethType 	:: Word16}
 			   			  		deriving (Show)

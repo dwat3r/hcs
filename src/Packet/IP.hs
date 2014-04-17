@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Packets.IP (
+module Packet.IP (
 		IP(..),
 		toBytes,
 		fromBytes,
@@ -10,7 +10,7 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
-import Main
+import Packet.Ethernet
 --representation:
 --fields smaller than a byte stores values as big endian
 data IP = IP 	{_version 	:: Word8,
