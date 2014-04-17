@@ -36,6 +36,7 @@ instance Header Ethernet where
 		ethType <- getWord16be
 		return $ Ethernet dest source ethType) bs
 
+
 macToBS :: MAC -> B.ByteString
 macToBS (M bs) = B.pack bs
 

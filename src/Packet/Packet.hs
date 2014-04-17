@@ -6,7 +6,7 @@ import qualified Data.ByteString.Lazy as B
 
 --class and abstract data definitions:
 
-data a :+: b where
+data a :+: b where 
 	(:+:) :: a -> b -> a :+: b
 	deriving (Show) --TODO: Show instance pretty prints the field
 

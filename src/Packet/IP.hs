@@ -45,6 +45,7 @@ instance Header IP where
 		putWord32be $ i^.source
 		putWord32be $ i^.dest
 		putLazyByteString $ i^.options
+	fromBytes bs = undefined --binary-bits
 
 instance Attachable Ethernet IP where
 

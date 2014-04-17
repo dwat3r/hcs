@@ -23,6 +23,9 @@ data TCP = TCP {source			:: Word16
 				,_urgp 			:: Word16
 				,_options	 	:: B.ByteString}
 					deriving Show
+
+makeLenses ''TCP
+
 instance Header TCP where
 	toBytes t = undefined
 	fromBytes bs = undefined
