@@ -6,6 +6,7 @@ module Packet.Packet where
 import qualified Data.ByteString.Lazy as B
 import Numeric(showHex)
 import Data.List(intercalate)
+import Data.List.Split(splitOn)
 import Data.Word(Word8)
 --class and abstract data definitions:
 
@@ -33,29 +34,25 @@ class Attachable a b where
 class Header a where
 	toBytes :: a -> B.ByteString
 	fromBytes :: B.ByteString -> a
---mac adress 
-fromMac :: B.ByteString -> String
-fromMac xs = intercalate ":" $ map hex $ B.unpack xs
-	where 
-		hex :: (Show a,Integral a) => a -> String
-		hex a = showHex a ""
+--mac address 
+newtype MACAddr = MACA B.ByteString
+--B.Bytestring -> String --pretty print
+instance Show MACAddr where
+	show (MACA mac) = intercalate ":" $ map hex $ B.unpack mac
+		where 
+			hex :: (Show a,Integral a) => a -> String
+			hex a = showHex a ""
+--String -> B.ByteString --parse and check length
+instance Read MACAddr where
+	readsPrec _ s 	| (length $ splitOn ":" s) == 6 = [(MACA $ B.pack $ map (\x->read x::Word8) $ splitOn ":" s,"")]
+					| otherwise = error "Invalid format"
 
-toMac :: [Word8] -> B.ByteString
-toMac xs 	| length xs == 6 = B.pack xs
-		| otherwise = error "Incorrect length"
-{-
-toIPa :: Word32 -> String
-toIPa n = 
--}
-fromIPa :: String -> Word32
-fromIPa s = if all (\x -> 0<=x && x<=255) (toIPlist s 4) then 
---TODO:parsing
 
-toIPlist :: String -> Int -> [Word8]
-toIPlist s 0 = if s == [] then [] else error "Invalid format"
-toIPlist s n = case (break (== '.') s) of
-				([],_)->if n==0 then [] else error "Invalid format"
-				(a,b) ->(read a):toIPlist (tail' $ snd $ break (== '.') s) (n-1)
-					where 
-						tail' [] = []
-						tail' xs = tail xs
+--ip address
+newtype IPAddr = IPA Word32
+--Word32 -> String
+instance Show IPAddr where
+	show (IPA ip) = undefined
+--String -> Word32
+instance Read IPAddr where
+	readsPrec _ s | (length $ splitOn "." s) == 4 = [(IPA $ {-bit magic-},"")]
