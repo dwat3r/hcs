@@ -10,8 +10,8 @@ import Control.Lens
 import Packet.Packet
 import Packet.Ethernet
 
-data ARP = ARP 	{_hrd 	:: Word16
-	    		,_pro 	:: Word16
+data ARP = ARP 	{_hrd	:: Word16
+	    		,_pro	:: Word16
 		        ,_hln 	:: Word8
 		        ,_pln 	:: Word8
 		        ,_oper 	:: Word16
@@ -19,17 +19,20 @@ data ARP = ARP 	{_hrd 	:: Word16
 		        ,_spa 	:: Word32
 		        ,_tha 	:: B.ByteString
 		        ,_tpa 	:: Word32}
-	    			deriving (Show)
 
 makeLenses ''ARP
 
+instance Show ARP where
+	show a = "ARP: \n" ++
+			"hrd: "
+
 instance Header ARP where
-	toBytes a = undefined
-	fromBytes a = undefined
+	toBytes a 	 = undefined
+	fromBytes bs = undefined
 
 instance Header (Ethernet :+: ARP) where
-	toBytes a = undefined
-	fromBytes a = undefined
+	toBytes (e :+: a) 	= undefined
+	fromBytes bs 		= undefined
 
 instance Attachable Ethernet ARP where
 	e +++ a = undefined

@@ -2,8 +2,6 @@
 --exports:
 module Packet.Ethernet (
 		Ethernet(..),
-		MAC(..),
-		macToBS,
 		toBytes,
 		fromBytes,
 		ethernet) where
@@ -18,26 +16,24 @@ import Packet.Packet
 data Ethernet = Ethernet 	{_dest 		:: B.ByteString
 			   			  	,_source 	:: B.ByteString
 			   			  	,_ethType 	:: Word16}
-			   			  		deriving (Show)
 --lens magic
 makeLenses ''Ethernet
-
-newtype MAC = M [Word8] 
-	deriving (Show) --TODO: smarter
+--pretty printing mac addresses:
+instance Show Ethernet where
+	show (Ethernet d s t) = "Ethernet: \n" ++
+							"destination: " ++ fromMac d ++ "\n" ++
+							"source: " ++ fromMac s ++ "\n" ++
+							"type: " ++ show t
 
 instance Header Ethernet where
 	toBytes e = runPut $ do 
-		putLazyByteString $ e^.dest
-		putLazyByteString $ e^.source
-		putWord16be $ e^.ethType
+		e^.dest & putLazyByteString
+		e^.source & putLazyByteString
+		e^.ethType & putWord16be
 	fromBytes bs = runGet (do
 		dest <- getLazyByteString 6
 		source <- getLazyByteString 6
 		ethType <- getWord16be
 		return $ Ethernet dest source ethType) bs
 
-
-macToBS :: MAC -> B.ByteString
-macToBS (M bs) = B.pack bs
-
-ethernet = Ethernet (macToBS $ M [0,0,0,0,0,0]) (macToBS $ M [0,0,0,0,0,0]) 0x800
+ethernet = Ethernet (toMac [0,0,0,0,0,0]) (toMac [0,0,0,0,0,0]) 0
