@@ -1,10 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 --exports:
-module Packet.Ethernet (
-		Ethernet(..),
-		toBytes,
-		fromBytes,
-		ethernet) where
+module Packet.Ethernet where
 --imports:
 import Data.Word
 import qualified Data.ByteString.Lazy as B
@@ -13,27 +9,27 @@ import Data.Binary.Get
 import Control.Lens
 import Packet.Packet
 --representation:
-data Ethernet = Ethernet 	{_dest 		:: B.ByteString
-			   			  	,_source 	:: B.ByteString
+data Ethernet = Ethernet 	{_dest 		:: MACAddr
+			   			  	,_source 	:: MACAddr
 			   			  	,_ethType 	:: Word16}
 --lens magic
 makeLenses ''Ethernet
 --pretty printing mac addresses:
 instance Show Ethernet where
-	show (Ethernet d s t) = "Ethernet: \n" ++
-							"destination: " ++ fromMac d ++ "\n" ++
-							"source: " ++ fromMac s ++ "\n" ++
-							"type: " ++ show t
+	show e = unlines ["<Ethernet>",
+					"destination: " ++ show (e^.dest),
+					"source: " ++ show (e^.source),
+					"type: " ++ "0x" ++ hex (e^.ethType)]
 
 instance Header Ethernet where
 	toBytes e = runPut $ do 
-		e^.dest & putLazyByteString
-		e^.source & putLazyByteString
-		e^.ethType & putWord16be
+		e^.dest & unMac & pB
+		e^.source & unMac & pB
+		e^.ethType & pW16
 	fromBytes bs = runGet (do
-		dest <- getLazyByteString 6
-		source <- getLazyByteString 6
-		ethType <- getWord16be
-		return $ Ethernet dest source ethType) bs
+		dest <- gB 6
+		source <- gB 6
+		ethType <- gW16
+		return $ Ethernet (mac dest) (mac source) ethType) bs
 
-ethernet = Ethernet (toMac [0,0,0,0,0,0]) (toMac [0,0,0,0,0,0]) 0
+ethernet = Ethernet (read "0:0:0:0:0:0"::MACAddr) (read "0:0:0:0:0:0"::MACAddr) 0
