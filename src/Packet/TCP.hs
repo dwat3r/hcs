@@ -55,9 +55,9 @@ calcChecksum::(I.IP:+:TCP)->(I.IP:+:TCP)
 calcChecksum (i :+: t) = i:+: (t & checksum .~ (i:+:t & calc))
 	where
 		calc::(I.IP:+:TCP)->Word16
-		calc it = foldl' ( (+) . complement) 0 $ ws it
-		ws::B.ByteString->[Word16]
-		ws bs = runGet $ (replicateM (B.length $ pseudoH bs) gW16) bs
+		calc = foldl' ( (+) . complement) 0 . ws
+		ws::(I.IP:+:TCP)->[Word16]
+		ws it = runGet (replicateM ((fromIntegral $ B.length $ pseudoH it)`div`2) gW16) $ pseudoH it
 		pseudoH::(I.IP:+:TCP)->B.ByteString
 		pseudoH (i:+:t) = runPut $ do 
 						i^.I.source & unIpa & pW32
@@ -66,6 +66,7 @@ calcChecksum (i :+: t) = i:+: (t & checksum .~ (i:+:t & calc))
 						i^.I.protocol & pW8
 						toBytes t & B.length & fromIntegral & pW16 --tcp header (+payload) length.
 						t & checksum .~ 0 & toBytes & pB
+
 instance Header TCP where
 	toBytes t = runPut $ do
 		t^.source & pW16
@@ -93,6 +94,11 @@ instance Header TCP where
 			offset flags window checksum urgp options
 
 instance Header (I.IP :+: TCP) where
+	toBytes (i :+: t) = toBytes i `B.append` toBytes t
+	fromBytes bs = 
+		where
+			iphlen::B.ByteString->Int
+			iphlen = 
 
 instance Header (E.Ethernet :+: (I.IP :+: TCP)) where
 
