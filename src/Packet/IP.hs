@@ -6,7 +6,9 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get
 import Control.Lens
-import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.))
+import Control.Monad(replicateM)
+import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.),complement)
+import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
 --representation:
@@ -44,7 +46,7 @@ instance Show IP where
 			"version: " ++ show (i^.version),
 			"header length: " ++ show (i^.hlen),
 			"type of service: " ++ show (i^.tos),
-			"header length: " ++ show (i^.len),
+			"total length: " ++ show (i^.len),
 			"identification: " ++ show (i^.ipID),
 			"flags: ",
 			"\treserved: " ++ show (i^.flags & rsv),
@@ -68,8 +70,20 @@ packfo f o = (fromIntegral f `shiftL` 8) .|. (o `shiftR` 3)
 unpackfo::Word16->(Word8,Word16)
 unpackfo fo = (fromIntegral fo `shiftR` 8,fo `shiftL` 3)
 --helper for calculating options field length:
-hlen' h | h<=5 = 0
-		| True = (h-5)*8
+--hlen->number of Word8 -s
+oplen h | h<=5 = 0
+		| True = (h-5)*4
+--calculating the checksum field:
+calcChecksum::IP->IP
+calcChecksum ip = ip & checksum .~ (ip & calc)
+	where 
+		calc::IP->Word16
+		calc ip = foldl' ( (+) . complement) 0 ws
+		ws::[Word16]
+		ws = runGet (replicateM (10+(ip^.hlen & fromIntegral & oplen)`div`2) gW16) $ toBytes (ip & checksum .~ 0)
+--calculating the hlen field:
+calcHlen::IP->IP
+calcHlen ip = ip & hlen .~ (toBytes ip & B.length & fromIntegral & (`div` 4))
 instance Header IP where
 	toBytes i = runPut $ do
 		packvh (i^.version) (i^.hlen) & pW8
@@ -83,7 +97,7 @@ instance Header IP where
 		i^.source & unIpa & pW32
 		i^.dest & unIpa & pW32
 		i^.options & pB
-	fromBytes bs = runGet (do
+	fromBytes = runGet $ do
 		vh <- gW8
 		tos <- gW8
 		len <- gW16
@@ -94,7 +108,7 @@ instance Header IP where
 		checksum <- gW16
 		source <- gW32
 		dest <- gW32
-		options <- gB (fromIntegral $ hlen' $ snd $ unpackvh vh)
+		options <- gB (fromIntegral $ oplen $ snd $ unpackvh vh)
 		return $ IP (fst $ unpackvh vh)
 					(snd $ unpackvh vh)
 					tos len ipID
@@ -103,12 +117,57 @@ instance Header IP where
 					ttl protocol checksum
 					(ipa source)
 					(ipa dest)
-					options) bs
+					options
 
 instance Header (E.Ethernet :+: IP) where
-	toBytes (e :+: i) = undefined
-	fromBytes bs = undefined
+	toBytes (e :+: i) = toBytes e `B.append` toBytes i
+	fromBytes bs = 	(fromBytes (B.take 14 bs)::E.Ethernet) :+:
+					(fromBytes (B.drop 14 bs)::IP)
+
 instance Attachable E.Ethernet IP where
+	e +++ i = (e & E.ethType .~ 0x800) :+: i
 
+ip = IP 4 5 8 20 0 0 0 64 0 0
+	(read "0.0.0.0"::IPAddr)
+	(read "0.0.0.0"::IPAddr)
+	B.empty & calcChecksum & calcHlen
 
-ip = IP
+{-
+optional constants and predicates from pcs:
+iNADDR_ANY		= 0x00000000	-- 0.0.0.0
+iNADDR_NONE		= 0x00000000	-- 0.0.0.0
+iNADDR_BROADCAST	= 0xffffffff	-- 255.255.255.255
+iNADDR_LOOPBACK		= 0x7f000001	-- 127.0.0.1
+iNADDR_UNSPEC_GROUP	= 0xe0000000	-- 224.0.0.0
+iNADDR_ALLHOSTS_GROUP	= 0xe0000001	-- 224.0.0.1
+iNADDR_ALLRTRS_GROUP	= 0xe0000002	-- 224.0.0.2
+iNADDR_DVMRP_GROUP	= 0xe0000004	-- 224.0.0.4
+iNADDR_ALLPIM_ROUTERS_GROUP = 0xe000000d	-- 224.0.0.13
+iNADDR_ALLRPTS_GROUP	= 0xe0000016	-- 224.0.0.22, IGMPv3
+iNADDR_MAX_LOCAL_GROUP	= 0xe00000ff	-- 224.0.0.255
+
+inLinklocal::IPAddr->Bool
+...
+def IN_LINKLOCAL(i):
+    """Return True if the given address is in the 169.254.0.0/16 range."""
+    return (((i) & 0xffff0000) == 0xa9fe0000)
+
+def IN_MULTICAST(i):
+    """Return True if the given address is in the 224.0.0.0/4 range."""
+    return (((i) & 0xf0000000) == 0xe0000000)
+
+def IN_LOCAL_GROUP(i):
+    """Return True if the given address is in the 224.0.0.0/24 range."""
+    return (((i) & 0xffffff00) == 0xe0000000)
+
+def IN_EXPERIMENTAL(i):
+    """Return True if the given address is in the 240.0.0.0/24 range."""
+    return (((i) & 0xf0000000) == 0xf0000000)
+
+def IN_PRIVATE(i):
+    """Return True if the given address is in any of the 10.0.0.0/8,
+       172.16.0.0/16, or 192.168.0.0/24 ranges from RFC 1918."""
+    return ((((i) & 0xff000000) == 0x0a000000) or \
+            (((i) & 0xfff00000) == 0xac100000) or \
+            (((i) & 0xffff0000) == 0xc0a80000))
+-}
