@@ -78,12 +78,16 @@ calcChecksum::IP->IP
 calcChecksum ip = ip & checksum .~ (ip & calc)
 	where 
 		calc::IP->Word16
-		calc ip = foldl' ( (+) . complement) 0 ws
+		calc ip = complement $ foldl' (+) 0 ws
 		ws::[Word16]
 		ws = runGet (replicateM (10+(ip^.hlen & fromIntegral & oplen)`div`2) gW16) $ toBytes (ip & checksum .~ 0)
 --calculating the hlen field:
 calcHlen::IP->IP
 calcHlen ip = ip & hlen .~ (toBytes ip & B.length & fromIntegral & (`div` 4))
+--helper for getting eth+ip header length
+eihlen::B.ByteString->Word8
+eihlen = snd . unpackvh . B.head . B.drop 14
+
 instance Header IP where
 	toBytes i = runPut $ do
 		packvh (i^.version) (i^.hlen) & pW8

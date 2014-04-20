@@ -50,23 +50,25 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 --offset->number of Word8 -s
 oplen h | h<=5 = 0
 		| True = (h-5)*4
---calculate checksum for ip :+: tcp:
-calcChecksum::(I.IP:+:TCP)->(I.IP:+:TCP)
-calcChecksum (i :+: t) = i:+: (t & checksum .~ (i:+:t & calc))
+--helper for getting tcp header length:
+tcplen::TCP->Word16
+tcplen t = t^.offset & oplen & (*2) & fromIntegral
+
+--calculate checksum for ip , tcp:
+calcChecksum::I.IP->TCP->Word16
+calcChecksum i t = complement $ foldl' (+) 0 $ ws i t
 	where
-		calc::(I.IP:+:TCP)->Word16
-		calc = foldl' ( (+) . complement) 0 . ws
-		ws::(I.IP:+:TCP)->[Word16]
-		ws it = runGet (replicateM ((fromIntegral $ B.length $ pseudoH it)`div`2) gW16) $ pseudoH it
-		pseudoH::(I.IP:+:TCP)->B.ByteString
-		pseudoH (i:+:t) = runPut $ do 
+		ws::I.IP->TCP->[Word16]
+		ws i t = runGet (replicateM ((fromIntegral $ B.length $ pseudoH i t)`div`2) gW16) $ pseudoH i t
+		pseudoH::I.IP->TCP->B.ByteString
+		pseudoH i t = runPut $ do 
 						i^.I.source & unIpa & pW32
 						i^.I.dest & unIpa & pW32
 						(0::Word8) & pW8
 						i^.I.protocol & pW8
-						toBytes t & B.length & fromIntegral & pW16 --tcp header (+payload) length.
+						t & tcplen & pW16 --tcp header (+payload) length.
 						t & checksum .~ 0 & toBytes & pB
-
+--TODO: flag setters
 instance Header TCP where
 	toBytes t = runPut $ do
 		t^.source & pW16
@@ -93,16 +95,25 @@ instance Header TCP where
 		return $ TCP source dest seqnum acknum
 			offset flags window checksum urgp options
 
-instance Header (I.IP :+: TCP) where
-	toBytes (i :+: t) = toBytes i `B.append` toBytes t
-	fromBytes bs = 
-		where
-			iphlen::B.ByteString->Int
-			iphlen = 
+--instance Header (I.IP :+: TCP) where
+--	toBytes (i :+: t) = toBytes i `B.append` toBytes t
+--	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ iphlen bs) bs)::I.IP):+:
+--					(fromBytes (B.drop (fromIntegral $ iphlen bs) bs)::TCP)
+--					where
+--						iphlen::B.ByteString->Word8
+--						iphlen = snd . I.unpackvh . B.head
 
-instance Header (E.Ethernet :+: (I.IP :+: TCP)) where
+instance Header ((E.Ethernet :+: I.IP) :+: TCP) where
+	toBytes (ei :+: t) = toBytes ei `B.append` toBytes t
+	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ I.eihlen bs) bs)::E.Ethernet:+:I.IP) :+:
+					(fromBytes (B.drop (fromIntegral $ I.eihlen bs) bs)::TCP)
 
-instance Attachable I.IP TCP
-instance Attachable E.Ethernet (I.IP :+: TCP)
+instance Attachable (E.Ethernet:+:I.IP) TCP where
+	ei +++ t = (setr ei ((I.len +~ (t & tcplen)).(I.protocol .~ 6))) :+: (t & checksum .~ calcChecksum (getr ei) t)
 
-tcp = TCP 0 0 0 0 0 0 0 0 0 B.empty
+--instance Attachable E.Ethernet (I.IP :+: TCP) where
+--	e +++ it = (e & E.ethType .~ 0x800) :+: it
+
+tcp = TCP 0 0 0 0 5 0 0 0 0 B.empty
+
+--TODO: write aux functions for setting options field

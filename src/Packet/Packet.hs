@@ -18,16 +18,22 @@ data a :+: b where
 instance (Show a,Show b)=>Show (a :+: b) where
 	show (a :+: b) = show a ++ "\n" ++ show b
 
-infixr 7 :+:
---de-concatenation
+infixl 6 :+:
+
 --TODO: implement a Zipper here
-pLeft :: a :+: b -> a
-pLeft (a :+: b) = a
+--getters for :+:
+getl :: a :+: b -> a
+getl (a :+: b) = a
 
-pRight :: a :+: b -> b
-pRight (a :+: b) = b
+getr :: a :+: b -> b
+getr (a :+: b) = b
+--setters for :+:
+setl :: a :+: b -> (a->a) -> a:+:b
+setl (a:+:b) f = (f a:+:b)
 
-infixr +++
+setr :: a :+: b -> (b->b) -> a:+:b
+setr (a:+:b) f = (a:+:f b)
+infixl 6 +++
 
 class Attachable a b where
 	(+++) :: a -> b -> (a :+: b)
