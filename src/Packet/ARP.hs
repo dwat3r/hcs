@@ -5,10 +5,11 @@ module Packet.ARP where
 import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
-import Data.Binary.Get
+import Data.Binary.Get hiding (getBytes)
 import Control.Lens
+import Control.Applicative((<$>),(<*>))
 import Packet.Packet
-import Packet.Ethernet
+import qualified Packet.Ethernet as E
 
 data ARP = ARP 	{_hrd	:: Word16
 	    		,_pro	:: Word16
@@ -45,7 +46,7 @@ instance Header ARP where
 		a^.spa & unIpa & pW32
 		a^.tha & unMac & pB
 		a^.tpa & unIpa & pW32
-	fromBytes bs = runGet (do
+	getBytes = do
 		hrd <- gW16
 		pro <- gW16
 		hln <- gW8
@@ -55,15 +56,15 @@ instance Header ARP where
 		spa <- gW32
 		tha <- gB 6
 		tpa <- gW32
-		return $ ARP hrd pro hln pln opcode (mac sha) (ipa spa) (mac tha) (ipa tpa)) bs
+		return $ ARP hrd pro hln pln opcode (mac sha) (ipa spa) (mac tha) (ipa tpa)
 
-instance Header (Ethernet :+: ARP) where
+instance Header (E.Ethernet :+: ARP) where
 	toBytes (e :+: a) 	= toBytes e `B.append` toBytes a
-	fromBytes bs 		= 	(fromBytes (B.take 14 bs)::Ethernet) :+:
-							(fromBytes (B.drop 14 bs)::ARP)
+	getBytes	 		= (:+:) <$> (getBytes::Get E.Ethernet) <*>
+									(getBytes::Get ARP)
 
-instance Attachable Ethernet ARP where
-	e +++ a = (e & ethType .~ 0x806) :+: a
+instance Attachable E.Ethernet ARP where
+	e +++ a = (e & E.ethType .~ 0x806) :+: a
 
 arp = ARP 0 0 0 0 0 
 		(read "0:0:0:0:0:0"::MACAddr) 

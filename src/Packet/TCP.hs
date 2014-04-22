@@ -5,14 +5,16 @@ module Packet.TCP where
 import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
-import Data.Binary.Get
+import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Control.Monad(replicateM)
+import Control.Applicative((<$>),(<*>))
 import Data.Bits(testBit,complement)
 import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
 import qualified Packet.IP as I
+
 
 data TCP = TCP {_source			:: Word16
 				,_dest 			:: Word16
@@ -46,6 +48,7 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 	where
 		toL::Word8->[Bool]
 		toL f = map (testBit f) [7,6..0]
+--TODO:flagsetter function
 --helper for calculating options field length:
 --offset->number of Word8 -s
 oplen h | h<=5 = 0
@@ -54,19 +57,17 @@ oplen h | h<=5 = 0
 tcplen::TCP->Word16
 tcplen t = t^.offset & oplen & (*2) & fromIntegral
 
---calculate checksum for ip , tcp:
-calcChecksum::I.IP->TCP->Word16
-calcChecksum i t = complement $ foldl' (+) 0 $ ws i t
+--calculate checksum for ip :+: tcp:
+calcChecksum::I.IP->TCP->Word16->Word16
+calcChecksum i t tlen = bs2check $ pseudoH i t tlen
 	where
-		ws::I.IP->TCP->[Word16]
-		ws i t = runGet (replicateM ((fromIntegral $ B.length $ pseudoH i t)`div`2) gW16) $ pseudoH i t
-		pseudoH::I.IP->TCP->B.ByteString
-		pseudoH i t = runPut $ do 
+		pseudoH::I.IP->TCP->Word16->B.ByteString
+		pseudoH i t tlen = runPut $ do 
 						i^.I.source & unIpa & pW32
 						i^.I.dest & unIpa & pW32
 						(0::Word8) & pW8
 						i^.I.protocol & pW8
-						t & tcplen & pW16 --tcp header (+payload) length.
+						tlen & pW16 --tcp header (+payload) length.
 						t & checksum .~ 0 & toBytes & pB
 --TODO: flag setters
 instance Header TCP where
@@ -81,7 +82,7 @@ instance Header TCP where
 		t^.checksum & pW16
 		t^.urgp & pW16
 		t^.options & pB
-	fromBytes = runGet $ do
+	getBytes = do
 		source <- gW16
 		dest <- gW16
 		seqnum <- gW32
@@ -95,24 +96,13 @@ instance Header TCP where
 		return $ TCP source dest seqnum acknum
 			offset flags window checksum urgp options
 
---instance Header (I.IP :+: TCP) where
---	toBytes (i :+: t) = toBytes i `B.append` toBytes t
---	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ iphlen bs) bs)::I.IP):+:
---					(fromBytes (B.drop (fromIntegral $ iphlen bs) bs)::TCP)
---					where
---						iphlen::B.ByteString->Word8
---						iphlen = snd . I.unpackvh . B.head
-
 instance Header ((E.Ethernet :+: I.IP) :+: TCP) where
 	toBytes (ei :+: t) = toBytes ei `B.append` toBytes t
-	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ ((I.eihlen bs)*4)) bs)::E.Ethernet:+:I.IP) :+:
-					(fromBytes (B.drop (fromIntegral $ ((I.eihlen bs)*4)) bs)::TCP)
+	getBytes = (:+:) <$>	(getBytes::Get (E.Ethernet:+:I.IP)) <*>
+							(getBytes::Get TCP)
 
 instance Attachable (E.Ethernet:+:I.IP) TCP where
-	(e:+:i) +++ t = e:+:(i & I.len +~ (t & tcplen & (*2)) & I.protocol .~ 6) :+: (t & checksum .~ calcChecksum i t)
-
---instance Attachable E.Ethernet (I.IP :+: TCP) where
---	e +++ it = (e & E.ethType .~ 0x800) :+: it
+	(e:+:i) +++ t = e:+:((i & I.len +~ (t & tcplen & (*2)) & I.protocol .~ 6) & I.calcChecksum) :+: (t & checksum .~ calcChecksum i t (tcplen t))
 
 tcp = TCP 0 0 0 0 5 0 0 0 0 B.empty
 

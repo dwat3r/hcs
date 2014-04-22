@@ -5,7 +5,7 @@ module Packet.Ethernet where
 import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
-import Data.Binary.Get
+import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Packet.Packet
 --representation:
@@ -26,10 +26,10 @@ instance Header Ethernet where
 		e^.dest & unMac & pB
 		e^.source & unMac & pB
 		e^.ethType & pW16
-	fromBytes bs = runGet (do
+	getBytes = do
 		dest <- gB 6
 		source <- gB 6
 		ethType <- gW16
-		return $ Ethernet (mac dest) (mac source) ethType) bs
+		return $ Ethernet (mac dest) (mac source) ethType
 
 ethernet = Ethernet (read "0:0:0:0:0:0"::MACAddr) (read "0:0:0:0:0:0"::MACAddr) 0

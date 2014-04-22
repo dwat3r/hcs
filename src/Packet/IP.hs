@@ -4,13 +4,17 @@ module Packet.IP where
 import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
-import Data.Binary.Get
+import Data.Binary.Get hiding (getBytes)
 import Control.Lens
+import Control.Applicative((<$>),(<*>))
 import Control.Monad(replicateM)
 import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.),complement)
 import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
+
+import qualified Test.QuickCheck as Q
+
 --representation:
 --fields smaller than a byte stores values as big endian
 data IP = IP 	{_version 	:: Word8
@@ -32,14 +36,15 @@ makeLenses ''IP
 --special flags access:
 --stored big endian: rsv,df,mf,0,0....
 rsv :: Word8 -> Int
-rsv f | testBit f 7 = 1
+rsv f | testBit f 0 = 1
 	  | otherwise = 0
 df :: Word8 -> Int
-df f | testBit f 6 = 1
+df f | testBit f 1 = 1
 	 | otherwise = 0
 mf :: Word8 -> Int
-mf f | testBit f 5 = 1
+mf f | testBit f 2 = 1
 	 | otherwise = 0
+--TODO:setters for these bits
 
 instance Show IP where
 	show i = unlines ["<IP>",
@@ -61,26 +66,20 @@ instance Show IP where
 
 --internal packer,unpacker for [version,hlen] field:
 packvh::Word8->Word8->Word8
-packvh v h = v .|. (h `shiftR` 4)
+packvh v h = (v .&. 15) .|. (h `shiftL` 4)
 unpackvh::Word8->(Word8,Word8)
-unpackvh vh = (vh .&. 15,vh `shiftL` 4)
+unpackvh vh = (vh .&. 15,vh `shiftR` 4)
 --internal packer,unpacker for [flags,offset] field:
 packfo::Word8->Word16->Word16
-packfo f o = (fromIntegral f `shiftL` 8) .|. (o `shiftR` 3)
+packfo f o = fromIntegral (f .&. 7) .|. (o `shiftL` 3)
 unpackfo::Word16->(Word8,Word16)
-unpackfo fo = (fromIntegral fo `shiftR` 8,fo `shiftL` 3)
+unpackfo fo = (fromIntegral (fo .&. 7),(fo .&. 65528) `shiftR` 3)
 --helper for calculating options field length:
 --hlen->number of Word8 -s
 oplen h | h<=5 = 0
 		| True = (h-5)*4
 --calculating the checksum field:
-calcChecksum::IP->IP
-calcChecksum ip = ip & checksum .~ (ip & calc)
-	where 
-		calc::IP->Word16
-		calc ip = complement $ foldl' (+) 0 ws
-		ws::[Word16]
-		ws = runGet (replicateM (10+(ip^.hlen & fromIntegral & oplen)`div`2) gW16) $ toBytes (ip & checksum .~ 0)
+calcChecksum ip = ip & checksum .~ (bs2check $ toBytes (ip & checksum .~ 0))
 --calculating the hlen field:
 calcHlen::IP->IP
 calcHlen ip = ip & hlen .~ (toBytes ip & B.length & fromIntegral & (`div` 4))
@@ -101,7 +100,7 @@ instance Header IP where
 		i^.source & unIpa & pW32
 		i^.dest & unIpa & pW32
 		i^.options & pB
-	fromBytes = runGet $ do
+	getBytes = do
 		vh <- gW8
 		tos <- gW8
 		len <- gW16
@@ -125,8 +124,7 @@ instance Header IP where
 
 instance Header (E.Ethernet :+: IP) where
 	toBytes (e :+: i) = toBytes e `B.append` toBytes i
-	fromBytes bs = 	(fromBytes (B.take 14 bs)::E.Ethernet) :+:
-					(fromBytes (B.drop 14 bs)::IP)
+	getBytes = (:+:) <$> (getBytes::Get E.Ethernet) <*> (getBytes::Get IP)
 
 instance Attachable E.Ethernet IP where
 	e +++ i = (e & E.ethType .~ 0x800) :+: i
@@ -134,7 +132,7 @@ instance Attachable E.Ethernet IP where
 ip = IP 4 5 8 20 0 0 0 64 0 0
 	(read "0.0.0.0"::IPAddr)
 	(read "0.0.0.0"::IPAddr)
-	B.empty & calcChecksum & calcHlen
+	B.empty & calcChecksum
 
 {-
 optional constants and predicates from pcs:
@@ -175,3 +173,6 @@ def IN_PRIVATE(i):
             (((i) & 0xfff00000) == 0xac100000) or \
             (((i) & 0xffff0000) == 0xc0a80000))
 -}
+prop_pack_unvh x y = (unpackvh $ packvh x y) == (x`mod`16,y`mod`16)
+
+prop_pack_unfo x y = (unpackfo $ packfo x y) == (x`mod` 8,y`mod`8192)

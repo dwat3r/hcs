@@ -5,12 +5,13 @@ module Packet.Packet where
 --imports:
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
-import Data.Binary.Get
+import Data.Binary.Get hiding (getBytes)
+import Control.Monad(replicateM)
 import Numeric(showHex)
 import Data.List(intercalate,foldl')
 import Data.List.Split(splitOn)
-import Data.Word(Word8,Word32)
-import Data.Bits(shiftL,shiftR,(.|.))
+import Data.Word(Word8,Word32,Word16)
+import Data.Bits(shiftL,shiftR,(.|.),complement)
 --class and abstract data definitions:
 data a :+: b where 
 	(:+:) :: a -> b -> a :+: b
@@ -51,6 +52,10 @@ class Attachable a b where
 class Header a where
 	toBytes :: a -> B.ByteString
 	fromBytes :: B.ByteString -> a
+	fromBytes = runGet getBytes
+	getBytes :: Get a
+	getBytes = undefined
+
 --mac address 
 newtype MACAddr = MACA B.ByteString
 --internal unpack,pack for parsing:
@@ -103,3 +108,7 @@ gW8 = getWord8
 gW16 = getWord16be
 gW32 = getWord32be
 gB = getLazyByteString
+grB = getRemainingLazyByteString
+--for checksum calculating:
+bs2check::B.ByteString->Word16
+bs2check bs = complement $ foldl' (+) 0 $ runGet (replicateM ((fromIntegral $ B.length bs)`div` 2) gW16) bs
