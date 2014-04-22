@@ -70,6 +70,6 @@ instance Header ((E.Ethernet :+: I.IP) :+: UDP) where
 --	i +++ u = (i & I.len +~ (u^.len) & I.protocol .~ 17) :+: u & calcChecksum
 
 instance Attachable (E.Ethernet:+:I.IP) UDP where
-	ei +++ u = (setr ei ((I.len +~ 4).(I.protocol .~ 17))) :+: (u & checksum .~ calcChecksum (getr ei) u)
+	ei +++ u = (setr ei ((I.len +~ 8).(I.protocol .~ 17))) :+: (u & checksum .~ calcChecksum (getr ei) u)
 
 udp = UDP 0 0 4 0

@@ -33,6 +33,15 @@ setl (a:+:b) f = (f a:+:b)
 
 setr :: a :+: b -> (b->b) -> a:+:b
 setr (a:+:b) f = (a:+:f b)
+--setters for more complex structs:
+setlr :: a:+:b:+:c -> (b->b) ->a:+:b:+:c
+setlr (a:+:b:+:c) f = a:+:f b:+:c
+
+setll :: a:+:b:+:c -> (a->a) ->a:+:b:+:c
+setll (a:+:b:+:c) f = f a:+:b:+:c
+
+set23 :: a:+:b:+:c -> (b->b) -> (c->c) -> a:+:b:+:c
+set23 (a:+:b:+:c) f g = a:+:f b:+:g c
 infixl 6 +++
 
 class Attachable a b where
@@ -51,10 +60,10 @@ mac :: B.ByteString -> MACAddr
 mac bs = MACA bs
 --B.Bytestring -> String --pretty print
 instance Show MACAddr where
-	show (MACA mac) = intercalate ":" $ map hex $ B.unpack mac
+	show (MACA mac) = intercalate ":" $ map (\x->showHex x "") $ B.unpack mac
 
 hex :: (Show a,Integral a) => a -> String
-hex a = showHex a ""
+hex a = "0x" ++ showHex a ""
 --String -> B.ByteString --parse and check length
 instance Read MACAddr where
 	readsPrec _ s 	| (length $ splitOn ":" s) == 6 = [(MACA $ B.pack $ map (\x->read x::Word8) $ splitOn ":" s,"")]

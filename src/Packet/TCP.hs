@@ -105,11 +105,11 @@ instance Header TCP where
 
 instance Header ((E.Ethernet :+: I.IP) :+: TCP) where
 	toBytes (ei :+: t) = toBytes ei `B.append` toBytes t
-	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ I.eihlen bs) bs)::E.Ethernet:+:I.IP) :+:
-					(fromBytes (B.drop (fromIntegral $ I.eihlen bs) bs)::TCP)
+	fromBytes bs = 	(fromBytes (B.take (fromIntegral $ ((I.eihlen bs)*4)) bs)::E.Ethernet:+:I.IP) :+:
+					(fromBytes (B.drop (fromIntegral $ ((I.eihlen bs)*4)) bs)::TCP)
 
 instance Attachable (E.Ethernet:+:I.IP) TCP where
-	ei +++ t = (setr ei ((I.len +~ (t & tcplen)).(I.protocol .~ 6))) :+: (t & checksum .~ calcChecksum (getr ei) t)
+	(e:+:i) +++ t = e:+:(i & I.len +~ (t & tcplen & (*2)) & I.protocol .~ 6) :+: (t & checksum .~ calcChecksum i t)
 
 --instance Attachable E.Ethernet (I.IP :+: TCP) where
 --	e +++ it = (e & E.ethType .~ 0x800) :+: it

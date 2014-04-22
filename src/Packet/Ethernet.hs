@@ -19,7 +19,7 @@ instance Show Ethernet where
 	show e = unlines ["<Ethernet>",
 					"destination: " ++ show (e^.dest),
 					"source: " ++ show (e^.source),
-					"type: " ++ "0x" ++ hex (e^.ethType)]
+					"type: " ++ hex (e^.ethType)]
 
 instance Header Ethernet where
 	toBytes e = runPut $ do 
