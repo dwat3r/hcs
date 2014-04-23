@@ -43,6 +43,7 @@ setll (a:+:b:+:c) f = f a:+:b:+:c
 
 set23 :: a:+:b:+:c -> (b->b) -> (c->c) -> a:+:b:+:c
 set23 (a:+:b:+:c) f g = a:+:f b:+:g c
+
 infixl 6 +++
 
 class Attachable a b where

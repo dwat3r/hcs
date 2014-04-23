@@ -6,6 +6,7 @@ import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
+import Control.Applicative
 import Control.Lens
 import Packet.Packet
 --representation:
@@ -27,9 +28,11 @@ instance Header Ethernet where
 		e^.source & unMac & pB
 		e^.ethType & pW16
 	getBytes = do
-		dest <- gB 6
-		source <- gB 6
-		ethType <- gW16
-		return $ Ethernet (mac dest) (mac source) ethType
+	  dst <- gB 6
+	  src <- gB 6
+	  typ <- gW16
+	  if (typ == 0x800)
+	  	then pure (Ethernet (mac dst) (mac src) typ)
+	  	else empty
 
-ethernet = Ethernet (read "0:0:0:0:0:0"::MACAddr) (read "0:0:0:0:0:0"::MACAddr) 0
+ethernet = Ethernet (read "0:0:0:0:0:0"::MACAddr) (read "0:0:0:0:0:0"::MACAddr) 0x800

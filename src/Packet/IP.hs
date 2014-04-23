@@ -13,7 +13,7 @@ import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
 
-import qualified Test.QuickCheck as Q
+--import qualified Test.QuickCheck as Q
 
 --representation:
 --fields smaller than a byte stores values as big endian

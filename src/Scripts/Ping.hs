@@ -8,7 +8,7 @@ import qualified Packet.IP as I
 import qualified Packet.ICMP as IC
 import qualified Packet.Payload as P
 
-request = 	E.ethernet +++ 
+request = 	E.ethernet  +++ 
 			I.ip +++ 
 			IC.icmp +++
 			P.payload
