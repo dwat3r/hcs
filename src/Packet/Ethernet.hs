@@ -31,8 +31,6 @@ instance Header Ethernet where
 	  dst <- gB 6
 	  src <- gB 6
 	  typ <- gW16
-	  if (typ == 0x800)
-	  	then pure (Ethernet (mac dst) (mac src) typ)
-	  	else empty
+	  return $ (Ethernet (mac dst) (mac src) typ)
 
 ethernet = Ethernet (read "0:0:0:0:0:0"::MACAddr) (read "0:0:0:0:0:0"::MACAddr) 0x800

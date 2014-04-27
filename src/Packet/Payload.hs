@@ -22,6 +22,7 @@ newtype Payload = Payload {_content :: B.ByteString}
 makeLenses ''Payload
 paylen::Payload->Word16
 paylen p = p^. content & B.length & fromIntegral
+
 instance Show Payload where
 	show p = unlines ["<Payload>",
 				"content: " ++ show (p^.content)]
@@ -59,7 +60,7 @@ instance Attachable (E.Ethernet:+:I.IP:+:IC.ICMP) Payload where
 	(e:+:i:+:ic) +++ p = e :+: ((i & I.len +~paylen p) & I.calcChecksum) :+: (ic & IC.checksum .~ ccIC ic p) :+: p
 		where
 			ccIC::IC.ICMP->Payload->Word16
-			ccIC ic p = bs2check $ toBytes ic `B.append` toBytes p
+			ccIC ic p = bs2check $ toBytes (ic & IC.checksum .~ 0) `B.append` toBytes p
 
 
-payload = Payload B.empty
+payload = Payload $ B.pack [0,0,0,0]

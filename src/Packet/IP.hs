@@ -66,9 +66,9 @@ instance Show IP where
 
 --internal packer,unpacker for [version,hlen] field:
 packvh::Word8->Word8->Word8
-packvh v h = (v .&. 15) .|. (h `shiftL` 4)
+packvh v h = (h .&. 15) .|. (v `shiftL` 4)
 unpackvh::Word8->(Word8,Word8)
-unpackvh vh = (vh .&. 15,vh `shiftR` 4)
+unpackvh vh = (vh `shiftR` 4,vh .&. 15)
 --internal packer,unpacker for [flags,offset] field:
 packfo::Word8->Word16->Word16
 packfo f o = fromIntegral (f .&. 7) .|. (o `shiftL` 3)

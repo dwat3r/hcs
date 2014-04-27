@@ -7,7 +7,7 @@ import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
 import Control.Monad(replicateM)
-import Numeric(showHex)
+import Numeric(showHex,readHex)
 import Data.List(intercalate,foldl')
 import Data.List.Split(splitOn)
 import Data.Word(Word8,Word32,Word16)
@@ -23,26 +23,7 @@ infixl 6 :+:
 
 --TODO: implement a Zipper here
 --getters for :+:
-getl :: a :+: b -> a
-getl (a :+: b) = a
 
-getr :: a :+: b -> b
-getr (a :+: b) = b
---setters for :+:
-setl :: a :+: b -> (a->a) -> a:+:b
-setl (a:+:b) f = (f a:+:b)
-
-setr :: a :+: b -> (b->b) -> a:+:b
-setr (a:+:b) f = (a:+:f b)
---setters for more complex structs:
-setlr :: a:+:b:+:c -> (b->b) ->a:+:b:+:c
-setlr (a:+:b:+:c) f = a:+:f b:+:c
-
-setll :: a:+:b:+:c -> (a->a) ->a:+:b:+:c
-setll (a:+:b:+:c) f = f a:+:b:+:c
-
-set23 :: a:+:b:+:c -> (b->b) -> (c->c) -> a:+:b:+:c
-set23 (a:+:b:+:c) f g = a:+:f b:+:g c
 
 infixl 6 +++
 
@@ -70,9 +51,10 @@ instance Show MACAddr where
 
 hex :: (Show a,Integral a) => a -> String
 hex a = "0x" ++ showHex a ""
+
 --String -> B.ByteString --parse and check length
 instance Read MACAddr where
-	readsPrec _ s 	| (length $ splitOn ":" s) == 6 = [(MACA $ B.pack $ map (\x->read x::Word8) $ splitOn ":" s,"")]
+	readsPrec _ s 	| (length $ splitOn ":" s) == 6 = [(MACA $ B.pack $ map (\x->fst $ head $ (readHex x::[(Word8,String)])) $ splitOn ":" s,"")]
 					| otherwise = error "Invalid format"
 
 --ip address
@@ -112,4 +94,4 @@ gB = getLazyByteString
 grB = getRemainingLazyByteString
 --for checksum calculating:
 bs2check::B.ByteString->Word16
-bs2check bs = complement $ foldl' (+) 0 $ runGet (replicateM ((fromIntegral $ B.length bs)`div` 2) gW16) bs
+bs2check bs = complement $ foldl' (\x y->if x+y<x || x+y<y then x+y+1 else x+y) 0 $ runGet (replicateM ((fromIntegral $ B.length bs)`div` 2) gW16) bs
