@@ -7,8 +7,7 @@ import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Control.Applicative((<$>),(<*>))
-import Control.Monad(replicateM)
-import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.),complement)
+import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.))
 import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
@@ -80,12 +79,8 @@ oplen h | h<=5 = 0
 		| True = (h-5)*4
 --calculating the checksum field:
 calcChecksum ip = ip & checksum .~ (bs2check $ toBytes (ip & checksum .~ 0))
---calculating the hlen field:
-calcHlen::IP->IP
-calcHlen ip = ip & hlen .~ (toBytes ip & B.length & fromIntegral & (`div` 4))
---helper for getting eth+ip header length
-eihlen::B.ByteString->Word8
-eihlen = snd . unpackvh . B.head . B.drop 14
+
+
 
 instance Header IP where
 	toBytes i = runPut $ do

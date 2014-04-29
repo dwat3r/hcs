@@ -8,7 +8,7 @@ import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
 import Control.Monad(replicateM)
 import Numeric(showHex,readHex)
-import Data.List(intercalate,foldl')
+import Data.List(intercalate,foldl',unfoldr)
 import Data.List.Split(splitOn)
 import Data.Word(Word8,Word32,Word16)
 import Data.Bits(shiftL,shiftR,(.|.),complement)
@@ -95,3 +95,15 @@ grB = getRemainingLazyByteString
 --for checksum calculating:
 bs2check::B.ByteString->Word16
 bs2check bs = complement $ foldl' (\x y->if x+y<x || x+y<y then x+y+1 else x+y) 0 $ runGet (replicateM ((fromIntegral $ B.length bs)`div` 2) gW16) bs
+
+--From PLEAC
+bin2dec :: [Word8] -> Word8
+bin2dec = foldr (\c s -> s * 2 + c) 0 . reverse
+
+dec2bin :: Word8 -> [Word8]
+dec2bin = reverse . unfoldr decomp
+    where decomp n = if n == 0 then Nothing else Just(n `mod` 2, n `div` 2)
+          
+--flip byte order of a Word8: (from little endian to big,and vica versa)
+flipBO :: Word8->Word8
+flipBO = bin2dec . reverse . dec2bin

@@ -6,6 +6,7 @@ import Data.Word
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
+import Data.Char(chr)
 import Control.Lens
 import Control.Applicative((<$>),(<*>))
 import Packet.Packet
@@ -25,7 +26,7 @@ paylen p = p^. content & B.length & fromIntegral
 
 instance Show Payload where
 	show p = unlines ["<Payload>",
-				"content: " ++ show (p^.content)]
+				"content: " ++ show (p^.content & B.unpack & map (chr . fromIntegral))]
 
 
 instance Header Payload where

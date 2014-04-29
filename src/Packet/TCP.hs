@@ -92,7 +92,7 @@ instance Header TCP where
 		window <- gW16
 		checksum <- gW16
 		urgp <- gW16
-		options <- gB (fromIntegral $ oplen offset)
+		options <- gB (fromIntegral $ oplen $ flipBO offset)
 		return $ TCP source dest seqnum acknum
 			offset flags window checksum urgp options
 

@@ -182,14 +182,40 @@ parsePacket::B.ByteString->Maybe L2
 parsePacket bs = runGet getPacket bs
 
 data L2 = HE E.Ethernet L3 | HP2 P.Payload
-	deriving (Show)
 data L3 = HI I.IP L4 | HA A.ARP | HP3 P.Payload
-	deriving (Show)
 data L4 = HT T.TCP L5 | HU U.UDP L5 | HIC IC.ICMP L5 | HP4 P.Payload
-	deriving (Show)
 data L5 = HP P.Payload
-	deriving (Show)
+
+instance Show L2 where
+	show (HE e l3) = show e ++ show l3
+	show (HP2 p) = show p
+
+instance Show L3 where
+	show (HI i l4) = show i ++ show l4
+	show (HA a) = show a
+	show (HP3 p) = show p
+
+instance Show L4 where
+	show (HT t l5) = show t ++ show l5
+	show (HU u l5) = show u ++ show l5
+	show (HIC ic l5) = show ic ++ show l5
+	show (HP4 p) = show p
+
+instance Show L5 where
+	show (HP p) = show p
+
+isARP :: Maybe L2 -> Bool
+isARP (Just (HE _ (HA _))) = True
+isARP _ = False
 
 isICMP :: Maybe L2 -> Bool
 isICMP (Just (HE _ (HI _ (HIC _ (HP _))))) = True
 isICMP _ = False
+
+isTCP :: Maybe L2 -> Bool
+isTCP (Just (HE _ (HI _ (HT _ (HP _))))) = True
+isTCP _ = False
+
+isUDP :: Maybe L2 -> Bool
+isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
+isUDP _ = False
