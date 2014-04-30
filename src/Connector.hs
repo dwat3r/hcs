@@ -133,6 +133,7 @@ data P =  PE E.Ethernet |
 			PP P.Payload
 		deriving (Show)
 -}
+--packet parser
 getPacket :: Get (Maybe L2)
 getPacket = do
 	end <- isEmpty
@@ -219,3 +220,20 @@ isTCP _ = False
 isUDP :: Maybe L2 -> Bool
 isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
 isUDP _ = False
+--for examining and modifying input packets:
+toARP :: Maybe L2 -> Maybe (E.Ethernet:+:A.ARP)
+toARP (Just (HE e (HA a))) = Just $ e:+:a
+toARP _ = Nothing
+
+toICMP :: Maybe L2 -> Maybe (E.Ethernet:+:I.IP:+:IC.ICMP:+:P.Payload)
+toICMP (Just (HE e (HI i (HIC ic (HP p))))) = Just $ e:+:i:+:ic:+:p
+toICMP _ = Nothing
+
+toTCP :: Maybe L2 ->  Maybe (E.Ethernet:+:I.IP:+:T.TCP:+:P.Payload)
+toTCP (Just (HE e (HI i (HT t (HP p))))) = Just $ e:+:i:+:t:+:p
+toTCP _ = Nothing
+
+toUDP :: Maybe L2 -> Maybe (E.Ethernet:+:I.IP:+:U.UDP:+:P.Payload)
+toUDP (Just (HE e (HI i (HU u (HP p))))) = Just $ e:+:i:+:u:+:p
+toUDP _ = Nothing
+

@@ -49,6 +49,13 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 		toL::Word8->[Bool]
 		toL f = map (testBit f) [7,6..0]
 --TODO:flagsetter function
+setFlags :: Word8->[String]->Word8
+setFlags f flags = foldl (flipbit f) zip flags ["CWR","ECN","URG","ACK","PSH","RST","SYN","FIN"]
+	where
+		flipbit :: Word8->(String,String)->Word8
+		flipbit f (a,b) = undefined
+
+
 --helper for calculating options field length:
 --offset->number of Word8 -s
 oplen h | h<=5 = 0
