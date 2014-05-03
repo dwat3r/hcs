@@ -12,35 +12,39 @@ import qualified Packet.Ethernet as E
 import qualified Packet.IP as I
 import qualified Packet.ICMP as IC
 import qualified Packet.Payload as P
+import Network.BSD
 
-request = 	
-			(E.ethernet & E.dest   .~ (read "90:e6:ba:4e:7b:0b"::MACAddr) 
-						& E.source .~ (read "90:e6:ba:4e:7b:0b"::MACAddr)) +++ 
-			(I.ip & I.source .~ (read "192.168.0.100"::IPAddr)
-				  & I.dest   .~ (read "192.168.0.100"::IPAddr)) +++ 
-			(IC.icmpEchoReq) +++
-			(P.payload & P.content .~ (B.pack [0..3]))
+request hostname = do
+			address <- fmap hostAddress (getHostByName hostname)
+			return $ (E.ethernet & E.dest   .~ (read "08:9e:01:05:fd:07"::MACAddr) 
+							& E.source .~ (read "00:0a:e4:32:97:4c"::MACAddr)) +++ 
+				(I.ip & I.source .~ (read "157.181.167.124"::IPAddr)
+					  & I.dest   .~ (IPA $ flipBO32 address)
+					  & I.ttl	 .~ 64) +++ 
+				(IC.icmpEchoReq) +++
+				(P.payload & P.content .~ (B.pack [0..47]))
 
 
 {-
 main = do 
-	i <- openIface "enp2s0"
+	i <- openIface "lan"
 	setFilter i "icmp" True 0
-	replicateM_ 1000 $ do
-		sendPacket i request
-		bs<-readPacket i
-		print $ parsePacket bs
-		threadDelay 1000000
+	req <- request "oktnb106.inf.elte.hu"
+	replicateM 10 $ sendPacket i req
+	--loopBS i 10 pp
 	printStats i
 -}
-main = do
-	i <- openIface "enp2s0"
-	--setFilter i "tcp" True 0
-	loopBS i 100 ppp
 
-pp bs = do
-	case (isICMP $ parsePacket bs) of
-			True -> print $ parsePacket bs
+main = do
+	i <- openIface "lan"
+	--setFilter i "tcp" True 0
+	loopBS i 1000 ppp
+
+pp _ bs = do
+	case (isICMP $ parsePacket $ B.fromStrict bs) of
+			True -> print $ parsePacket $ B.fromStrict bs
 			False -> print '.'
+	threadDelay 1000000
+
 
 ppp _ = print . parsePacket . B.fromStrict

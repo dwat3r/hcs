@@ -1,9 +1,11 @@
+{-# LANGUAGE TypeOperators #-}
 module Connector where
 
 --imports
 import Network.Pcap hiding (sendPacket)
 import System.IO
 import Data.Word
+import Data.Maybe
 import qualified Data.ByteString.Lazy as B
 import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
@@ -218,8 +220,9 @@ isTCP (Just (HE _ (HI _ (HT _ (HP _))))) = True
 isTCP _ = False
 
 isUDP :: Maybe L2 -> Bool
-isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
-isUDP _ = False
+isUDP = isJust . toUDP 
+--isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
+--isUDP _ = False
 --for examining and modifying input packets:
 toARP :: Maybe L2 -> Maybe (E.Ethernet:+:A.ARP)
 toARP (Just (HE e (HA a))) = Just $ e:+:a
