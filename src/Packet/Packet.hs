@@ -23,7 +23,24 @@ infixl 6 :+:
 
 --TODO: implement a Zipper here
 --getters for :+:
-
+get21::(a:+:b)->a
+get21 (a:+:b) = a
+get22::(a:+:b)->b
+get22 (a:+:b) = b
+get31::(a:+:b:+:c)->a
+get31 (a:+:b:+:c) = a
+get32::(a:+:b:+:c)->b
+get32 (a:+:b:+:c) = b
+get33::(a:+:b:+:c)->c
+get33 (a:+:b:+:c) = c
+get41::(a:+:b:+:c:+:d)->a
+get41 (a:+:b:+:c:+:d) = a
+get42::(a:+:b:+:c:+:d)->b
+get42 (a:+:b:+:c:+:d) = b
+get43:: (a:+:b:+:c:+:d) ->c
+get43 (a:+:b:+:c:+:d) =c
+get44::(a:+:b:+:c:+:d)->d
+get44 (a:+:b:+:c:+:d) = d
 
 infixl 6 +++
 
@@ -40,6 +57,7 @@ class Header a where
 
 --mac address 
 newtype MACAddr = MACA B.ByteString
+	deriving Eq
 --internal unpack,pack for parsing:
 unMac :: MACAddr -> B.ByteString
 unMac (MACA bs) = bs
@@ -59,6 +77,7 @@ instance Read MACAddr where
 
 --ip address
 newtype IPAddr = IPA Word32
+	deriving Eq
 --internal unpack,pack for parsing:
 unIpa :: IPAddr -> Word32
 unIpa (IPA w) = w

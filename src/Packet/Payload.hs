@@ -31,7 +31,10 @@ instance Show Payload where
 
 instance Header Payload where
 	toBytes p = p^.content
-	getBytes = Payload <$> grB
+	getBytes = do
+		end <-isEmpty
+		if end then return $ Payload B.empty
+		else Payload <$> grB
 
 instance Header (E.Ethernet :+:I.IP :+: U.UDP :+: Payload) where
 	toBytes (eiu :+: p) = toBytes eiu `B.append` toBytes p
