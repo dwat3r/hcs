@@ -12,6 +12,7 @@ import Data.Binary.Get hiding (getBytes)
 import Control.Applicative
 import Control.Monad
 import Control.Lens
+import Data.Maybe
 import Packet.Packet
 import qualified Packet.Ethernet as E
 import qualified Packet.ARP as A
@@ -41,6 +42,15 @@ parseDumpFile file = do
 			if (hdrWireLength hdr == 0) then return []
 			else (:) <$> pure (hdr,parsePacket $ B.fromStrict bs) <*> readit hl
 
+parseDumpFile'::FilePath->IO [(PktHdr,B.ByteString)]
+parseDumpFile' file = do
+	hl <- openOffline file
+	readit hl
+	where
+		readit hl = do
+			(hdr,bs) <- nextBS hl
+			if (hdrWireLength hdr == 0) then return []
+			else (:) <$> pure (hdr,B.fromStrict bs) <*> readit hl
 --let it go:
 sendPacket::(Header a)=>PcapHandle->a->IO ()
 sendPacket hl p = sendPacketBS hl (B.toStrict $ toBytes p)
@@ -87,25 +97,16 @@ getPacket = do
 						case l3 of
 							(I.IP {I._protocol=6}) 	-> do 
 								l4 <- getBytes :: Get T.TCP
-								end <- isEmpty
-								if end then return Nothing
-									else do
-									l5 <- getBytes :: Get P.Payload
-									return $ Just $ HE l2 $ HI l3 $ HT l4 $ HP l5
+								l5 <- getBytes :: Get P.Payload
+								return $ Just $ HE l2 $ HI l3 $ HT l4 $ HP l5
 							(I.IP {I._protocol=17}) -> do 
 								l4 <- getBytes :: Get U.UDP
-								end <- isEmpty
-								if end then return Nothing
-									else do
-									l5 <- getBytes :: Get P.Payload
-									return $ Just $ HE l2 $ HI l3 $ HU l4 $ HP l5
+								l5 <- getBytes :: Get P.Payload
+								return $ Just $ HE l2 $ HI l3 $ HU l4 $ HP l5
 							(I.IP {I._protocol=1})  -> do 
 								l4 <- getBytes :: Get IC.ICMP
-								end <- isEmpty
-								if end then return Nothing
-									else do
-									l5 <- getBytes :: Get P.Payload
-									return $ Just $ HE l2 $ HI l3 $ HIC l4 $ HP l5
+								l5 <- getBytes :: Get P.Payload
+								return $ Just $ HE l2 $ HI l3 $ HIC l4 $ HP l5
 							_ -> return Nothing
 				_ -> return Nothing
 
@@ -147,20 +148,17 @@ instance Show L5 where
 	show (HP p) = show p
 --predicates for input packets:
 isARP :: Maybe L2 -> Bool
-isARP (Just (HE _ (HA _))) = True
-isARP _ = False
+isARP = isJust . toARP
 
 isICMP :: Maybe L2 -> Bool
-isICMP (Just (HE _ (HI _ (HIC _ (HP _))))) = True
-isICMP _ = False
+isICMP = isJust . toICMP
 
 isTCP :: Maybe L2 -> Bool
-isTCP (Just (HE _ (HI _ (HT _ (HP _))))) = True
-isTCP _ = False
+isTCP = isJust . toTCP
 
 isUDP :: Maybe L2 -> Bool
-isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
-isUDP _ = False
+isUDP = isJust . toUDP
+
 --for examining and modifying input packets:
 toARP :: Maybe L2 -> Maybe (E.Ethernet:+:A.ARP)
 toARP (Just (HE e (HA a))) = Just $ e:+:a

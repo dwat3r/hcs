@@ -54,8 +54,23 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 --	where
 --		flipbit :: Word8->(String,String)->Word8
 --		flipbit f (a,b) = undefined
-
-
+--predicates for tcp flags:
+cwr::Word8->Bool
+cwr f = testBit f 7
+ecn::Word8->Bool
+ecn f = testBit f 6
+urg::Word8->Bool
+urg f = testBit f 5
+ack::Word8->Bool
+ack f = testBit f 4
+psh::Word8->Bool
+psh f = testBit f 3
+rst::Word8->Bool
+rst f = testBit f 2
+syn::Word8->Bool
+syn f = testBit f 1
+fin::Word8->Bool
+fin f = testBit f 0
 --helper for calculating options field length:
 --offset->number of Word8 -s
 oplen h | h<=5 = 0
@@ -99,7 +114,7 @@ instance Header TCP where
 		window <- gW16
 		checksum <- gW16
 		urgp <- gW16
-		options <- gB (fromIntegral $ oplen $ flipBO offset)
+		options <- gB (fromIntegral $ oplen offset)
 		return $ TCP source dest seqnum acknum
 			offset flags window checksum urgp options
 
