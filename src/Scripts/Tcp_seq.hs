@@ -27,14 +27,21 @@ main = do
 	args <- getArgs
 	if length args /= 5 then usage >> die
 	else do
-		packets <- parseDumpFile (args!!0)
-		print $ filter (filt args) packets
+		let [file,sip,dip,spt,dpt] = args
+		packets <- parseDumpFile file
+		let nps = zip [1..] packets
+		let	filt (n,(ph,ml2)) = (isTCP ml2)
+							  && (i^.I.source == (read sip::IPAddr))
+							  && (i^.I.dest   == (read dip::IPAddr))
+							  && (t^.T.flags & T.ack)
+							  && (t^.T.source == (read spt::Word16))
+							  && (t^.T.dest   == (read dpt::Word16))
+					        where (e,i,t,p) = grab ml2
+		let pkts@(_:ps) = filter filt nps
+		putStrLn $ unlines [ "Duplicate packets at:" ++ show x | y@((x,_),_) <- zip pkts ps, dup y]
 			where
-				filt::[String]->(PktHdr,Maybe L2)->Bool
-				filt args (ph,ml2) = (isTCP ml2) 
-							&& ((get42 pkt)^.I.source == (read (args!!1)::IPAddr))
-							&& ((get42 pkt)^.I.dest   == (read (args!!2)::IPAddr))
-							&& ((get43 pkt)^.T.flags & T.ack)
-							&& ((get43 pkt)^.T.source == (read (args!!3)::Word16))
-							&& ((get43 pkt)^.T.dest   == (read (args!!4)::Word16))
-					where pkt = (fromJust $ toTCP ml2) 
+				grab = get4 . fromJust . toTCP
+
+				dup ((n1,(_,ml21)),(n2,(_,ml22))) = t1^.T.acknum >= t2^.T.acknum 
+					where 
+						[(e1,i1,t1,p1),(e2,i2,t2,p2)] = map grab [ml21,ml22]

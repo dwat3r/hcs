@@ -158,14 +158,8 @@ isTCP :: Maybe L2 -> Bool
 isTCP = isJust . toTCP
 
 isUDP :: Maybe L2 -> Bool
-<<<<<<< HEAD
 isUDP = isJust . toUDP 
---isUDP (Just (HE _ (HI _ (HU _ (HP _))))) = True
---isUDP _ = False
-=======
-isUDP = isJust . toUDP
 
->>>>>>> 829281d99d71c6b9ef3df5192aea494561acd37c
 --for examining and modifying input packets:
 toARP :: Maybe L2 -> Maybe (E.Ethernet:+:A.ARP)
 toARP (Just (HE e (HA a))) = Just $ e:+:a

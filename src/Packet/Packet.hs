@@ -23,24 +23,12 @@ infixl 6 :+:
 
 --TODO: implement a Zipper here
 --getters for :+:
-get21::(a:+:b)->a
-get21 (a:+:b) = a
-get22::(a:+:b)->b
-get22 (a:+:b) = b
-get31::(a:+:b:+:c)->a
-get31 (a:+:b:+:c) = a
-get32::(a:+:b:+:c)->b
-get32 (a:+:b:+:c) = b
-get33::(a:+:b:+:c)->c
-get33 (a:+:b:+:c) = c
-get41::(a:+:b:+:c:+:d)->a
-get41 (a:+:b:+:c:+:d) = a
-get42::(a:+:b:+:c:+:d)->b
-get42 (a:+:b:+:c:+:d) = b
-get43:: (a:+:b:+:c:+:d) ->c
-get43 (a:+:b:+:c:+:d) =c
-get44::(a:+:b:+:c:+:d)->d
-get44 (a:+:b:+:c:+:d) = d
+get2::(a:+:b)->(a,b,(),())
+get2 (a:+:b) = (a,b,(),())
+get3::(a:+:b:+:c)->(a,b,c,())
+get3 (a:+:b:+:c) = (a,b,c,())
+get4::(a:+:b:+:c:+:d)->(a,b,c,d)
+get4 (a:+:b:+:c:+:d) = (a,b,c,d)
 
 infixl 6 +++
 

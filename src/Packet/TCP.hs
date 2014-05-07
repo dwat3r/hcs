@@ -9,12 +9,12 @@ import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Control.Monad(replicateM)
 import Control.Applicative((<$>),(<*>))
-import Data.Bits(testBit,complement)
+import Data.Bits(testBit,complement,shiftR)
 import Data.List(foldl')
 import Packet.Packet
 import qualified Packet.Ethernet as E
 import qualified Packet.IP as I
-
+import Debug.Trace
 
 data TCP = TCP {_source			:: Word16
 				,_dest 			:: Word16
@@ -49,16 +49,6 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 		toL::Word8->[Bool]
 		toL f = map (testBit f) [7,6..0]
 --TODO:flagsetter function
-<<<<<<< HEAD
-{-
-setFlags :: Word8->[String]->Word8
-setFlags f flags = foldl (flipbit f) zip flags ["CWR","ECN","URG","ACK","PSH","RST","SYN","FIN"]
-	where
-		flipbit :: Word8->(String,String)->Word8
-		flipbit f (a,b) = undefined
--}
-
-=======
 --setFlags :: Word8->[String]->Word8
 --setFlags f flags = foldl (flipbit f) zip flags ["CWR","ECN","URG","ACK","PSH","RST","SYN","FIN"]
 --	where
@@ -81,14 +71,12 @@ syn::Word8->Bool
 syn f = testBit f 1
 fin::Word8->Bool
 fin f = testBit f 0
->>>>>>> 829281d99d71c6b9ef3df5192aea494561acd37c
 --helper for calculating options field length:
 --offset->number of Word8 -s
-oplen h | h<=5 = 0
-		| True = (h-5)*4
+oplen h = ((h `shiftR` 4)-5)*4
 --helper for getting tcp header length:
 tcplen::TCP->Word16
-tcplen t = t^.offset & oplen & (*2) & fromIntegral
+tcplen t = t^.offset & (*4) & fromIntegral
 
 --calculate checksum for ip :+: tcp:
 calcChecksum::I.IP->TCP->Word16->Word16
