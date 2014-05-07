@@ -69,7 +69,7 @@ instance Show IPAddr where
 	show (IPA ip) = intercalate "." $ map show $ octets ip
 		where
 			octets :: Word32 -> [Word8]
-			octets w = 	[fromIntegral (ip `shiftR` 24)
+			octets ip = [fromIntegral (ip `shiftR` 24)
 						,fromIntegral (ip `shiftR` 16)
 						,fromIntegral (ip `shiftR` 8)
 						,fromIntegral ip]
@@ -107,3 +107,14 @@ dec2bin = reverse . unfoldr decomp
 --flip byte order of a Word8: (from little endian to big,and vica versa)
 flipBO :: Word8->Word8
 flipBO = bin2dec . reverse . dec2bin
+
+flipBO32 :: Word32->Word32
+flipBO32 = 	fromO . reverse . toO		
+	where
+		toO :: Word32 -> [Word8]
+		toO ip = [fromIntegral (ip `shiftR` 24)
+				,fromIntegral (ip `shiftR` 16)
+				,fromIntegral (ip `shiftR` 8)
+				,fromIntegral ip]
+		fromO :: [Word8] -> Word32
+		fromO = foldl' (\acc x->(acc `shiftL` 8) .|. fromIntegral x) 0
