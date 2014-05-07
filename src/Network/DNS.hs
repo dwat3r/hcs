@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.DNS where
+module Network.DNS where
 --imports:
 import Data.Word
 import qualified Data.ByteString.Lazy as B

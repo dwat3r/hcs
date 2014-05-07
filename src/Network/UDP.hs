@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.UDP where
+module Network.UDP where
 
 --imports:
 import Data.Word
@@ -11,9 +11,9 @@ import Control.Applicative((<$>),(<*>))
 import Control.Monad(replicateM)
 import Data.Bits(complement)
 import Data.List(foldl')
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.IP as I
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.IP as I
 
 data UDP = UDP 	{_source	:: Word16
 				,_dest		:: Word16

@@ -7,10 +7,94 @@
   (major1) == 4 && (major2) <  6 || \
   (major1) == 4 && (major2) == 6 && (minor) <= 0)
 
+/* package binary-0.7.1.0 */
+#define VERSION_binary "0.7.1.0"
+#define MIN_VERSION_binary(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  7 || \
+  (major1) == 0 && (major2) == 7 && (minor) <= 1)
+
+/* package bytestring-0.10.0.2 */
+#define VERSION_bytestring "0.10.0.2"
+#define MIN_VERSION_bytestring(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  10 || \
+  (major1) == 0 && (major2) == 10 && (minor) <= 0)
+
+/* package lens-4.1.2 */
+#define VERSION_lens "4.1.2"
+#define MIN_VERSION_lens(major1,major2,minor) (\
+  (major1) <  4 || \
+  (major1) == 4 && (major2) <  1 || \
+  (major1) == 4 && (major2) == 1 && (minor) <= 2)
+
+/* package network-info-0.2.0.3 */
+#define VERSION_network_info "0.2.0.3"
+#define MIN_VERSION_network_info(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  2 || \
+  (major1) == 0 && (major2) == 2 && (minor) <= 0)
+
 /* package pcap-0.4.5.2 */
 #define VERSION_pcap "0.4.5.2"
 #define MIN_VERSION_pcap(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  4 || \
   (major1) == 0 && (major2) == 4 && (minor) <= 5)
+
+/* package split-0.2.2 */
+#define VERSION_split "0.2.2"
+#define MIN_VERSION_split(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  2 || \
+  (major1) == 0 && (major2) == 2 && (minor) <= 2)
+
+/* tool gcc-4.9.0 */
+#define TOOL_VERSION_gcc "4.9.0"
+#define MIN_TOOL_VERSION_gcc(major1,major2,minor) (\
+  (major1) <  4 || \
+  (major1) == 4 && (major2) <  9 || \
+  (major1) == 4 && (major2) == 9 && (minor) <= 0)
+
+/* tool ghc-7.6.3 */
+#define TOOL_VERSION_ghc "7.6.3"
+#define MIN_TOOL_VERSION_ghc(major1,major2,minor) (\
+  (major1) <  7 || \
+  (major1) == 7 && (major2) <  6 || \
+  (major1) == 7 && (major2) == 6 && (minor) <= 3)
+
+/* tool ghc-pkg-7.6.3 */
+#define TOOL_VERSION_ghc_pkg "7.6.3"
+#define MIN_TOOL_VERSION_ghc_pkg(major1,major2,minor) (\
+  (major1) <  7 || \
+  (major1) == 7 && (major2) <  6 || \
+  (major1) == 7 && (major2) == 6 && (minor) <= 3)
+
+/* tool haddock-2.13.2 */
+#define TOOL_VERSION_haddock "2.13.2"
+#define MIN_TOOL_VERSION_haddock(major1,major2,minor) (\
+  (major1) <  2 || \
+  (major1) == 2 && (major2) <  13 || \
+  (major1) == 2 && (major2) == 13 && (minor) <= 2)
+
+/* tool hpc-0.6 */
+#define TOOL_VERSION_hpc "0.6"
+#define MIN_TOOL_VERSION_hpc(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  6 || \
+  (major1) == 0 && (major2) == 6 && (minor) <= 0)
+
+/* tool hsc2hs-0.67 */
+#define TOOL_VERSION_hsc2hs "0.67"
+#define MIN_TOOL_VERSION_hsc2hs(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  67 || \
+  (major1) == 0 && (major2) == 67 && (minor) <= 0)
+
+/* tool pkg-config-0.28 */
+#define TOOL_VERSION_pkg_config "0.28"
+#define MIN_TOOL_VERSION_pkg_config(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  28 || \
+  (major1) == 0 && (major2) == 28 && (minor) <= 0)
 

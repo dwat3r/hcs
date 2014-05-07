@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.IP where
+module Network.IP where
 --imports:
 import Data.Word
 import qualified Data.ByteString.Lazy as B
@@ -9,8 +9,8 @@ import Control.Lens
 import Control.Applicative((<$>),(<*>))
 import Data.Bits(testBit,shiftR,shiftL,(.|.),(.&.))
 import Data.List(foldl')
-import Packet.Packet
-import qualified Packet.Ethernet as E
+import Network.Packet
+import qualified Network.Ethernet as E
 
 --import qualified Test.QuickCheck as Q
 

@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.TCP where
+module Network.TCP where
 
 --imports:
 import Data.Word
@@ -11,9 +11,9 @@ import Control.Monad(replicateM)
 import Control.Applicative((<$>),(<*>))
 import Data.Bits(testBit,complement,shiftR)
 import Data.List(foldl')
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.IP as I
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.IP as I
 import Debug.Trace
 
 data TCP = TCP {_source			:: Word16

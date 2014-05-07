@@ -1,6 +1,6 @@
 {-# LANGUAGE TypeOperators,GADTs,MultiParamTypeClasses,TypeOperators #-}
 --exports:
-module Packet.Packet where
+module Network.Packet where
 
 --imports:
 import qualified Data.ByteString.Lazy as B

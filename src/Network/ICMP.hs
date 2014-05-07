@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.ICMP where
+module Network.ICMP where
 
 --imports
 import Data.Word
@@ -11,9 +11,9 @@ import Control.Monad(replicateM)
 import Control.Applicative((<$>),(<*>))
 import Data.List(foldl')
 import Data.Bits(complement)
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.IP as I
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.IP as I
 
 data ICMP = ICMP 	{_icType	:: Word8
 					,_code		:: Word8

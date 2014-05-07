@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 --exports:
-module Packet.Ethernet where
+module Network.Ethernet where
 --imports:
 import Data.Word
 import qualified Data.ByteString.Lazy as B
@@ -8,7 +8,7 @@ import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
 import Control.Applicative
 import Control.Lens
-import Packet.Packet
+import Network.Packet
 --representation:
 data Ethernet = Ethernet 	{_dest 		:: MACAddr
 			   			  	,_source 	:: MACAddr

@@ -4,14 +4,14 @@ import Network.Pcap hiding (sendPacket)
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import Control.Lens
-import Connector
+import Network.Connector
 import Control.Monad
 import Control.Concurrent(threadDelay)
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.IP as I
-import qualified Packet.ICMP as IC
-import qualified Packet.Payload as P
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.IP as I
+import qualified Network.ICMP as IC
+import qualified Network.Payload as P
 import Network.BSD
 
 request hostname = do

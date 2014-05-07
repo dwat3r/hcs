@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.Payload where
+module Network.Payload where
 
 --imports:
 import Data.Word
@@ -9,13 +9,13 @@ import Data.Binary.Get hiding (getBytes)
 import Data.Char(chr)
 import Control.Lens
 import Control.Applicative((<$>),(<*>))
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.ARP as A
-import qualified Packet.IP as I
-import qualified Packet.TCP as T
-import qualified Packet.UDP as U
-import qualified Packet.ICMP as IC
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.ARP as A
+import qualified Network.IP as I
+import qualified Network.TCP as T
+import qualified Network.UDP as U
+import qualified Network.ICMP as IC
 
 newtype Payload = Payload {_content :: B.ByteString}
 
@@ -33,8 +33,9 @@ instance Header Payload where
 	toBytes p = p^.content
 	getBytes = do
 		end <-isEmpty
-		if end then return $ Payload B.empty
-		else Payload <$> grB
+		if end
+		  then return $ Payload B.empty
+		  else Payload <$> grB
 
 instance Header (E.Ethernet :+:I.IP :+: U.UDP :+: Payload) where
 	toBytes (eiu :+: p) = toBytes eiu `B.append` toBytes p

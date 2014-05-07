@@ -43,10 +43,24 @@ Source-repository head
 
 Library
   Build-Depends: base,
-                 pcap
+                 binary,
+                 bytestring,
+                 pcap,
+                 lens,
+                 split,
+                 network-info
   Default-Language: Haskell98
   hs-Source-Dirs:  src
 
-  Exposed-Modules: 
+  Exposed-Modules:
+    Network.ARP
+    Network.Connector
+    Network.Ethernet
+    Network.ICMP
+    Network.IP
+    Network.Packet
+    Network.Payload
+    Network.TCP
+    Network.UDP
   Other-Modules:   
   Buildable:       True

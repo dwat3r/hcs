@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeOperators #-}
-module Connector where
+module Network.Connector where
 
 --imports
 import Network.Pcap hiding (sendPacket)
@@ -14,14 +14,14 @@ import Control.Applicative
 import Control.Monad
 import Control.Lens
 import Data.Maybe
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.ARP as A
-import qualified Packet.IP as I
-import qualified Packet.TCP as T
-import qualified Packet.UDP as U
-import qualified Packet.ICMP as IC
-import qualified Packet.Payload as P
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.ARP as A
+import qualified Network.IP as I
+import qualified Network.TCP as T
+import qualified Network.UDP as U
+import qualified Network.ICMP as IC
+import qualified Network.Payload as P
 
 --list your devs:
 listDevNames :: IO ()
@@ -40,8 +40,9 @@ parseDumpFile file = do
 	where
 		readit hl = do
 			(hdr,bs) <- nextBS hl
-			if (hdrWireLength hdr == 0) then return []
-			else (:) <$> pure (hdr,parsePacket $ B.fromStrict bs) <*> readit hl
+			if (hdrWireLength hdr == 0) 
+				then return []
+				else (:) <$> pure (hdr,parsePacket $ B.fromStrict bs) <*> readit hl
 
 parseDumpFile'::FilePath->IO [(PktHdr,B.ByteString)]
 parseDumpFile' file = do
@@ -50,8 +51,9 @@ parseDumpFile' file = do
 	where
 		readit hl = do
 			(hdr,bs) <- nextBS hl
-			if (hdrWireLength hdr == 0) then return []
-			else (:) <$> pure (hdr,B.fromStrict bs) <*> readit hl
+			if (hdrWireLength hdr == 0) 
+				then return []
+				else (:) <$> pure (hdr,B.fromStrict bs) <*> readit hl
 --let it go:
 sendPacket::(Header a)=>PcapHandle->a->IO ()
 sendPacket hl p = sendPacketBS hl (B.toStrict $ toBytes p)
@@ -80,44 +82,48 @@ printStats hl = do
 getPacket :: Get (Maybe L2)
 getPacket = do
 	end <- isEmpty
-	if end then return Nothing
-	else do
-		l2 <- getBytes :: Get E.Ethernet
-		end <- isEmpty
-		if end then return Nothing
+	if end 
+		then return Nothing
 		else do
-			case l2 of
-				(E.Ethernet {E._ethType=0x806}) -> do 
-					l3 <- getBytes :: Get A.ARP
-					return $ Just $ HE l2 $ HA l3
-				(E.Ethernet {E._ethType=0x800}) -> do 
-					l3 <- getBytes :: Get I.IP
-					end <- isEmpty
-					if end then return Nothing
-					else do
-						case l3 of
-							(I.IP {I._protocol=6}) 	-> do 
-								l4 <- getBytes :: Get T.TCP
-								l5 <- getBytes :: Get P.Payload
-								return $ Just $ HE l2 $ HI l3 $ HT l4 $ HP l5
-							(I.IP {I._protocol=17}) -> do 
-								l4 <- getBytes :: Get U.UDP
-								l5 <- getBytes :: Get P.Payload
-								return $ Just $ HE l2 $ HI l3 $ HU l4 $ HP l5
-							(I.IP {I._protocol=1})  -> do 
-								l4 <- getBytes :: Get IC.ICMP
-								l5 <- getBytes :: Get P.Payload
-								return $ Just $ HE l2 $ HI l3 $ HIC l4 $ HP l5
-							_ -> return Nothing
-				_ -> return Nothing
+			l2 <- getBytes :: Get E.Ethernet
+			end <- isEmpty
+			if end 
+				then return Nothing
+				else do
+					case l2 of
+						(E.Ethernet {E._ethType=0x806}) -> do 
+							l3 <- getBytes :: Get A.ARP
+							return $ Just $ HE l2 $ HA l3
+						(E.Ethernet {E._ethType=0x800}) -> do 
+							l3 <- getBytes :: Get I.IP
+							end <- isEmpty
+							if end 
+								then return Nothing
+								else do
+									case l3 of
+										(I.IP {I._protocol=6}) 	-> do 
+											l4 <- getBytes :: Get T.TCP
+											l5 <- getBytes :: Get P.Payload
+											return $ Just $ HE l2 $ HI l3 $ HT l4 $ HP l5
+										(I.IP {I._protocol=17}) -> do 
+											l4 <- getBytes :: Get U.UDP
+											l5 <- getBytes :: Get P.Payload
+											return $ Just $ HE l2 $ HI l3 $ HU l4 $ HP l5
+										(I.IP {I._protocol=1})  -> do 
+											l4 <- getBytes :: Get IC.ICMP
+											l5 <- getBytes :: Get P.Payload
+											return $ Just $ HE l2 $ HI l3 $ HIC l4 $ HP l5
+										_ -> return Nothing
+						_ -> return Nothing
 
 getPackets::Get [Maybe L2]
 getPackets = do
     empty <- isEmpty
-    if empty then return []
-    else do packet <- getPacket
-            packets <- getPackets
-            return (packet:packets)
+    if empty 
+    	then return []
+    	else do packet <- getPacket
+            	packets <- getPackets
+            	return (packet:packets)
 
 parsePacket::B.ByteString->Maybe L2
 parsePacket = runGet getPacket

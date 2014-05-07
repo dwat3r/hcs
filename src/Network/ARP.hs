@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell,TypeOperators,MultiParamTypeClasses,FlexibleInstances #-}
-module Packet.ARP where
+module Network.ARP where
 
 --imports:
 import Data.Word
@@ -8,8 +8,8 @@ import Data.Binary.Put
 import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Control.Applicative((<$>),(<*>))
-import Packet.Packet
-import qualified Packet.Ethernet as E
+import Network.Packet
+import qualified Network.Ethernet as E
 
 data ARP = ARP 	{_hrd	:: Word16
 	    		,_pro	:: Word16

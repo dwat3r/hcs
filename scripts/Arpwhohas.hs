@@ -5,13 +5,13 @@ import Network.Pcap hiding (sendPacket)
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import Control.Lens
-import Connector
+import Network.Connector
 import Control.Monad
 import Control.Concurrent(threadDelay)
-import Packet.Packet
-import qualified Packet.Ethernet as E
-import qualified Packet.IP as I
-import qualified Packet.ARP as A
+import Network.Packet
+import qualified Network.Ethernet as E
+import qualified Network.IP as I
+import qualified Network.ARP as A
 import System.Environment
 import System.Exit
 import Network.Info
@@ -38,7 +38,7 @@ main = do
         if isJust im == False then noIface
         else do
             i <- openIface $ args!!0
-            --setFilter i "arp" True 0
+            setFilter i "arp" True 0
             sendPacket i (packet (fst $ fromJust im) (snd $ fromJust im) (args!!1))
             printPacket i >> exit
 

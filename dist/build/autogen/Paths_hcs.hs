@@ -17,11 +17,11 @@ version :: Version
 version = Version {versionBranch = [0,1], versionTags = []}
 bindir, libdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/home/dwat3r/.cabal/bin"
-libdir     = "/home/dwat3r/.cabal/lib/i386-linux-ghc-7.6.3/hcs-0.1"
-datadir    = "/home/dwat3r/.cabal/share/i386-linux-ghc-7.6.3/hcs-0.1"
-libexecdir = "/home/dwat3r/.cabal/libexec"
-sysconfdir = "/home/dwat3r/.cabal/etc"
+bindir     = "/root/.cabal/bin"
+libdir     = "/root/.cabal/lib/i386-linux-ghc-7.6.3/hcs-0.1"
+datadir    = "/root/.cabal/share/i386-linux-ghc-7.6.3/hcs-0.1"
+libexecdir = "/root/.cabal/libexec"
+sysconfdir = "/root/.cabal/etc"
 
 getBinDir, getLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "hcs_bindir") (\_ -> return bindir)
