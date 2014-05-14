@@ -16,7 +16,7 @@ import System.Environment
 import System.Exit
 import Data.IORef
 
-usage   = putStrLn "Usage: ping interface ip"
+usage   = putStrLn "Usage: ping interface ip <gateway ip>"
 noIface = putStrLn "Error: no interface found with given name"
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)

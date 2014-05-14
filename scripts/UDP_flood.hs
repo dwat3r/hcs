@@ -16,7 +16,7 @@ import System.Environment
 import System.Exit
 import Data.IORef
 
-usage   = putStrLn "Usage: UDP_flood interface ip"
+usage   = putStrLn "Usage: UDP_flood interface ip <gateway ip>"
 noIface = putStrLn "Error: no interface found with given name"
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)
@@ -41,16 +41,16 @@ packet si di sm dm randport =	(E.ethernet & E.source 	.~ sm
 
 main = do
 	args <- getArgs
-	if length args /= 2 then usage >> die
+	if length args /= 3 then usage >> die
 	else do
-		let [iface,dip] = args
+		let [iface,dip,gateway] = args
 		im <- getIPMAC iface
 		if isJust im == False then noIface
 		else do
 			let (Just (sip,sha)) = im
 			i <- openIface iface
 			filterPacket i "arp"
-			sendPacket i (arpreq sip sha dip)
+			sendPacket i (arpreq sip sha gateway)
 			ptr<-newIORef Nothing
 			readPacket i ptr
 			arpresp <- readIORef ptr
