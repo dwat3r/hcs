@@ -12,6 +12,7 @@ import Data.List(intercalate,foldl',unfoldr)
 import Data.List.Split(splitOn)
 import Data.Word(Word8,Word32,Word16)
 import Data.Bits(shiftL,shiftR,(.|.),complement)
+import Debug.Trace
 --class and abstract data definitions:
 data a :+: b where 
 	(:+:) :: a -> b -> a :+: b

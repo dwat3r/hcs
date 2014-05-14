@@ -22,6 +22,22 @@ import qualified Network.TCP as T
 import qualified Network.UDP as U
 import qualified Network.ICMP as IC
 import qualified Network.Payload as P
+import Network.Info
+import Data.IORef
+
+getIPMAC::String->IO (Maybe (IPAddr,MACAddr))
+getIPMAC s = do
+    ifaces  <- getNetworkInterfaces
+    return $ toThrees $ listToMaybe $ filter (\n->s==name n) ifaces
+        where
+            toThrees::Maybe NetworkInterface->Maybe (IPAddr,MACAddr)
+            toThrees mn = case isJust mn of
+                        True -> Just $ (toIP $ ipv4 $ fromJust mn,toMac $ Network.Info.mac $ fromJust mn)
+                        False -> Nothing
+            toMac::MAC->MACAddr
+            toMac (MAC a b c d e f) = MACA $ B.pack [a,b,c,d,e,f]
+            toIP::IPv4->IPAddr
+            toIP (IPv4 i) = IPA $ flipBO32 i
 
 --list your devs:
 listDevNames :: IO ()
@@ -32,6 +48,9 @@ listDevNames = do
 --open the iface:
 openIface::String->IO PcapHandle
 openIface i = openLive i 2048 True 512
+
+filterPacket::PcapHandle->String->IO ()
+filterPacket hl s = setFilter hl s True 0
 
 parseDumpFile::FilePath->IO [(PktHdr,Maybe L2)]
 parseDumpFile file = do
@@ -44,31 +63,22 @@ parseDumpFile file = do
 				then return []
 				else (:) <$> pure (hdr,parsePacket $ B.fromStrict bs) <*> readit hl
 
-parseDumpFile'::FilePath->IO [(PktHdr,B.ByteString)]
-parseDumpFile' file = do
-	hl <- openOffline file
-	readit hl
-	where
-		readit hl = do
-			(hdr,bs) <- nextBS hl
-			if (hdrWireLength hdr == 0) 
-				then return []
-				else (:) <$> pure (hdr,B.fromStrict bs) <*> readit hl
---let it go:
 sendPacket::(Header a)=>PcapHandle->a->IO ()
 sendPacket hl p = sendPacketBS hl (B.toStrict $ toBytes p)
 
---the parsing begins:
 printPacket::PcapHandle->IO Int
 printPacket hl = do
 	loopBS hl 1 (\_ -> print . parsePacket . B.fromStrict)
 
-timestamp::PktHdr->String
-timestamp pr = (show $ hdrTime pr) ++ ",size: " ++ (show $ hdrWireLength pr) 
+readPacket::PcapHandle->IORef (Maybe L2)->IO Int
+readPacket hl r = do
+	loopBS hl 1 (\_ -> (writeIORef r) . parsePacket . B.fromStrict)
 
 readPackets::PcapHandle->Int->CallbackBS->IO Int
 readPackets = loopBS 
 
+timestamp::PktHdr->String
+timestamp pr = (show $ hdrTime pr) ++ ",size: " ++ (show $ hdrWireLength pr) 
 
 --print the stats:
 printStats::PcapHandle->IO ()

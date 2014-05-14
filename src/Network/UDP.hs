@@ -30,19 +30,17 @@ instance Show UDP where
 				"checksum: " ++ hex (u^.checksum)
 				]
 --calculate checksum for ip :+: udp:
-calcChecksum::I.IP->UDP->Word16
-calcChecksum i u = bs2check $ pseudoH i u
-	where
-		ws::I.IP->UDP->[Word16]
-		ws i u = runGet (replicateM ((fromIntegral $ B.length $ pseudoH i u)`div` 2) gW16) $ pseudoH i u
-		pseudoH::I.IP->UDP->B.ByteString
-		pseudoH i u = runPut $ do
-						i^.I.source & unIpa & pW32
-						i^.I.dest & unIpa & pW32
-						(0::Word8) & pW8
-						i^.I.protocol & pW8
-						u^.len & pW16 --udp header (+payload) length.
-						u & checksum .~ 0 & toBytes & pB
+calcChecksum::I.IP->UDP->Word16->Word16
+calcChecksum = ((bs2check .) .) . pseudoH
+
+pseudoH::I.IP->UDP->Word16->B.ByteString
+pseudoH i u ulen = runPut $ do
+				i^.I.source & unIpa & pW32
+				i^.I.dest & unIpa & pW32
+				(0::Word8) & pW8
+				i^.I.protocol & pW8
+				ulen & pW16 --udp header (+payload) length.
+				u & checksum .~ 0 & toBytes & pB
 
 
 instance Header UDP where
@@ -59,6 +57,6 @@ instance Header ((E.Ethernet :+: I.IP) :+: UDP) where
 						(getBytes::Get UDP)
 
 instance Attachable (E.Ethernet:+:I.IP) UDP where
-	(e:+:i) +++ u = e:+:((i & I.len +~ 8 & I.protocol .~ 17) & I.calcChecksum) :+: (u & checksum .~ calcChecksum i u)
+	(e:+:i) +++ u = e:+:((i & I.len +~ 8 & I.protocol .~ 17) & I.calcChecksum) :+: (u & checksum .~ calcChecksum i u 8)
 
-udp = UDP 0 0 4 0
+udp = UDP 0 0 8 0

@@ -9,7 +9,7 @@ import Data.Binary.Get hiding (getBytes)
 import Control.Lens
 import Control.Monad(replicateM)
 import Control.Applicative((<$>),(<*>))
-import Data.Bits(testBit,complement,shiftR)
+import Data.Bits(testBit,complement,shiftR,(.|.),bit)
 import Data.List(foldl')
 import Network.Packet
 import qualified Network.Ethernet as E
@@ -35,7 +35,7 @@ instance Show TCP where
 				"destination port: " ++ show (t^.dest),
 				"sequence number: " ++ show (t^.seqnum),
 				"acknowledgement number: " ++ show (t^.acknum),
-				"header length: " ++ show (t^.offset & (*4)) ++ " bytes",
+				"header length: " ++ show (t^.offset & ((*4) . (`shiftR` 4))) ++ " bytes",
 				"flags: " ++ show (t^.flags & showFlags),
 				"window size: " ++ show (t^.window),
 				"checksum: " ++ hex (t^.checksum),
@@ -49,11 +49,9 @@ showFlags f = snd $ unzip $ filter (fst) $ zip (toL f) ["CWR","ECN","URG","ACK",
 		toL::Word8->[Bool]
 		toL f = map (testBit f) [7,6..0]
 --TODO:flagsetter function
---setFlags :: Word8->[String]->Word8
---setFlags f flags = foldl (flipbit f) zip flags ["CWR","ECN","URG","ACK","PSH","RST","SYN","FIN"]
---	where
---		flipbit :: Word8->(String,String)->Word8
---		flipbit f (a,b) = undefined
+setFlags :: [String]->Word8
+setFlags flags = foldl1 ((.|.)) [bit (snd ref) |ref<-[("CWR",7),("ECN",6),("URG",5),("ACK",4),("PSH",3),("RST",2),("SYN",1),("FIN",0)],f<-flags,f==fst ref]
+
 --predicates for tcp flags:
 cwr::Word8->Bool
 cwr f = testBit f 7
@@ -71,25 +69,22 @@ syn::Word8->Bool
 syn f = testBit f 1
 fin::Word8->Bool
 fin f = testBit f 0
---helper for calculating options field length:
---offset->number of Word8 -s
-oplen h = ((h `shiftR` 4)-5)*4
 --helper for getting tcp header length:
 tcplen::TCP->Word16
 tcplen t = t^.offset & (*4) & fromIntegral
 
 --calculate checksum for ip :+: tcp:
 calcChecksum::I.IP->TCP->Word16->Word16
-calcChecksum i t tlen = bs2check $ pseudoH i t tlen
-	where
-		pseudoH::I.IP->TCP->Word16->B.ByteString
-		pseudoH i t tlen = runPut $ do 
-						i^.I.source & unIpa & pW32
-						i^.I.dest & unIpa & pW32
-						(0::Word8) & pW8
-						i^.I.protocol & pW8
-						tlen & pW16 --tcp header (+payload) length.
-						t & checksum .~ 0 & toBytes & pB
+calcChecksum = ((bs2check .) .) . pseudoH
+
+pseudoH::I.IP->TCP->Word16->B.ByteString
+pseudoH i t tlen = runPut $ do 
+				i^.I.source & unIpa & pW32
+				i^.I.dest & unIpa & pW32
+				(0::Word8) & pW8
+				i^.I.protocol & pW8
+				tlen & pW16 --tcp header (+payload) length.
+				t & checksum .~ 0 & toBytes & pB
 --TODO: flag setters
 instance Header TCP where
 	toBytes t = runPut $ do
@@ -113,9 +108,9 @@ instance Header TCP where
 		window <- gW16
 		checksum <- gW16
 		urgp <- gW16
-		options <- gB (fromIntegral $ oplen offset)
+		options <- gB (fromIntegral (((offset `shiftR` 4)-5)*4))
 		return $ TCP source dest seqnum acknum
-			offset flags window checksum urgp options
+			(offset `shiftR` 4) flags window checksum urgp options
 
 instance Header ((E.Ethernet :+: I.IP) :+: TCP) where
 	toBytes (ei :+: t) = toBytes ei `B.append` toBytes t
@@ -123,7 +118,7 @@ instance Header ((E.Ethernet :+: I.IP) :+: TCP) where
 							(getBytes::Get TCP)
 
 instance Attachable (E.Ethernet:+:I.IP) TCP where
-	(e:+:i) +++ t = e:+:((i & I.len +~ (t & tcplen & (*2)) & I.protocol .~ 6) & I.calcChecksum) :+: (t & checksum .~ calcChecksum i t (tcplen t))
+	(e:+:i) +++ t = e:+:((i & I.len +~ (t & tcplen) & I.protocol .~ 6) & I.calcChecksum) :+: (t & checksum .~ calcChecksum i t (tcplen t))
 
 tcp = TCP 0 0 0 0 5 0 0 0 0 B.empty
 

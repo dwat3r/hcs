@@ -30,7 +30,7 @@ instance Show Payload where
 
 
 instance Header Payload where
-	toBytes p = p^.content
+	toBytes p = runPut $ do p^.content & pB
 	getBytes = do
 		end <-isEmpty
 		if end
@@ -53,19 +53,25 @@ instance Header (E.Ethernet:+:I.IP:+:IC.ICMP:+:Payload) where
 						(getBytes::Get Payload)
 					
 instance Attachable (E.Ethernet:+:I.IP:+:T.TCP) Payload where
-	(e:+:i:+:t) +++ p = e:+:((i & I.len +~paylen p) & I.calcChecksum) :+: (t & T.checksum .~ T.calcChecksum i t (tcpaylen t p)) :+: p
+	(e:+:i:+:t) +++ p = e:+:((i & I.len +~paylen p) & I.calcChecksum) :+: (t & T.checksum .~ ccTP i t p) :+: p
 		where
 			tcpaylen::T.TCP->Payload->Word16
-			tcpaylen t p = T.tcplen t + paylen p 
+			tcpaylen t p = T.tcplen t + paylen p
+			ccTP::I.IP->T.TCP->Payload->Word16
+			ccTP i t p = bs2check (T.pseudoH i t (tcpaylen t p) `B.append` toBytes p)
 
 instance Attachable (E.Ethernet:+:I.IP:+:U.UDP) Payload where
-	(e:+:i:+:u) +++ p = e :+: ((i & I.len +~paylen p) & I.calcChecksum) :+: (u & U.len +~ paylen p & U.checksum .~ U.calcChecksum i u) :+: p
+	(e:+:i:+:u) +++ p = e :+: ((i & I.len +~paylen p) & I.calcChecksum) :+: (u & U.len +~ paylen p & U.checksum .~ ccUP i u p) :+: p
+		where
+			udpaylen::U.UDP->Payload->Word16
+			udpaylen u p = 8 + paylen p
+			ccUP::I.IP->U.UDP->Payload->Word16
+			ccUP i u p = bs2check (U.pseudoH i (u & U.len +~ paylen p) (udpaylen u p) `B.append` toBytes p)
 
 instance Attachable (E.Ethernet:+:I.IP:+:IC.ICMP) Payload where
 	(e:+:i:+:ic) +++ p = e :+: ((i & I.len +~paylen p) & I.calcChecksum) :+: (ic & IC.checksum .~ ccIC ic p) :+: p
 		where
 			ccIC::IC.ICMP->Payload->Word16
 			ccIC ic p = bs2check $ toBytes (ic & IC.checksum .~ 0) `B.append` toBytes p
-
 
 payload = Payload $ B.pack [0,0,0,0]

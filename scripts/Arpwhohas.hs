@@ -1,26 +1,21 @@
 {-# LANGUAGE TypeOperators #-}
 module Arpwhohas where
 
-import Network.Pcap hiding (sendPacket)
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import Control.Lens
 import Network.Connector
-import Control.Monad
-import Control.Concurrent(threadDelay)
 import Network.Packet
 import qualified Network.Ethernet as E
-import qualified Network.IP as I
 import qualified Network.ARP as A
 import System.Environment
 import System.Exit
-import Network.Info
- 
+--shortcuts to IO actions
 usage   = putStrLn "Usage: Arpwhohas interface ip"
 noIface = putStrLn "Error: no interface found with given name"
 exit    = exitWith ExitSuccess
 die     = exitWith (ExitFailure 1)
---source ip,source mac,dest ip
+--source ip,source mac,destination ip
 packet::IPAddr->MACAddr->String->(E.Ethernet:+:A.ARP)
 packet i m t=(E.ethernet & E.source .~ m
                         & E.dest .~ (read "ff:ff:ff:ff:ff:ff"::MACAddr)) +++
@@ -34,24 +29,12 @@ main = do
     args <- getArgs
     if length args /= 2 then usage >> die
     else do
-        im <- iface $ args!!0
+        let [iface,dip] = args
+        im <- getIPMAC iface
         if isJust im == False then noIface
         else do
-            i <- openIface $ args!!0
-            setFilter i "arp" True 0
-            sendPacket i (packet (fst $ fromJust im) (snd $ fromJust im) (args!!1))
+            let (sip,smac) = fromJust im
+            i <- openIface iface
+            filterPacket i "arp"
+            sendPacket i $ packet sip smac dip
             printPacket i >> exit
-
-iface::String->IO (Maybe (IPAddr,MACAddr))
-iface s = do
-    ifaces  <- getNetworkInterfaces
-    return $ toThrees $ listToMaybe $ filter (\n->s==name n) ifaces
-        where
-            toThrees::Maybe NetworkInterface->Maybe (IPAddr,MACAddr)
-            toThrees mn = case isJust mn of
-                        True -> Just $ (toIP $ ipv4 $ fromJust mn,toMac $ Network.Info.mac $ fromJust mn)
-                        False -> Nothing
-            toMac::MAC->MACAddr
-            toMac (MAC a b c d e f) = MACA $ B.pack [a,b,c,d,e,f]
-            toIP::IPv4->IPAddr
-            toIP (IPv4 i) = IPA $ flipBO32 i

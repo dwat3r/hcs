@@ -1,15 +1,12 @@
--- Description: A program using PCS to analyze a pcap file and graph
+-- Description: A program using HCS to analyze a pcap file and graph
 -- the sequence numbers
-module Tcp_seq where
+module Main where
 
-import Network.Pcap hiding (sendPacket)
 import qualified Data.ByteString.Lazy as B
 import Data.Maybe
 import Data.Word
 import Control.Lens
 import Network.Connector
-import Control.Monad
-import Control.Concurrent(threadDelay)
 import Network.Packet
 import qualified Network.Ethernet as E
 import qualified Network.IP as I
