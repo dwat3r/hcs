@@ -40,16 +40,16 @@ request si di sm dm = 	(E.ethernet 	& E.dest   .~ dm
 						(P.payload & P.content .~ (B.pack [0..47]))
 main = do
 	args <- getArgs
-	if length args /= 2 then usage >> die
+	if length args /= 3 then usage >> die
 	else do
-		let [iface,dip] = args
+		let [iface,dip,gateway] = args
 		im <- getIPMAC iface
 		if isJust im == False then noIface
 		else do
 			let (Just (sip,sha)) = im
 			i <- openIface iface
-			filterPacket i "arp"
-			sendPacket i (arpreq sip sha dip)
+			filterPacket i ("dst " ++ show sip ++ " && arp")
+			sendPacket i (arpreq sip sha gateway)
 			ptr<-newIORef Nothing
 			readPacket i ptr
 			arpresp <- readIORef ptr
