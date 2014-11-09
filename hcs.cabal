@@ -45,7 +45,6 @@ Library
   Build-Depends: base,
                  binary,
                  bytestring,
-                 pcap,
                  lens,
                  split,
                  network-info
@@ -54,7 +53,6 @@ Library
 
   Exposed-Modules:
     Network.ARP
-    Network.Connector
     Network.Ethernet
     Network.ICMP
     Network.IP
