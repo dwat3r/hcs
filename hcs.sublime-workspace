@@ -1,0 +1,446 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"a",
+				"a"
+			],
+			[
+				"Field",
+				"Field"
+			],
+			[
+				"r",
+				"random"
+			],
+			[
+				"te",
+				"tesztje"
+			],
+			[
+				"A",
+				"A"
+			],
+			[
+				"sz",
+				"szigDiagDomSor"
+			],
+			[
+				"m",
+				"m"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/Network/ARP.hs",
+			"settings":
+			{
+				"buffer_size": 1889,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Network/Connector.hs",
+			"settings":
+			{
+				"buffer_size": 5608,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Network/Ethernet.hs",
+			"settings":
+			{
+				"buffer_size": 970,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/Network/UDP.hs",
+			"settings":
+			{
+				"buffer_size": 1800,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 52.0,
+		"selected_items":
+		[
+			[
+				"convert",
+				"Indentation: Convert to Spaces"
+			]
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/dwat3r/Documents/petyamester python/zh_input.txt",
+		"/home/dwat3r/Documents/petyamester python/zh_ossz2.txt",
+		"/home/dwat3r/Documents/petyamester python/ossz.txt",
+		"/home/dwat3r/Documents/petyamester python/zh.rb",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/DHTMain.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/mi/nqueens.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/mi/nqueens.c",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/DHTNode.java",
+		"/home/dwat3r/Downloads/PROG2_2bead/PROG2_2bead/Edzesek.cs",
+		"/home/dwat3r/Downloads/PROG2_2bead/PROG2_2bead/Lista.cs",
+		"/home/dwat3r/Downloads/PROG2_2bead/PROG2_2bead/Program.cs",
+		"/home/dwat3r/Downloads/PROG2_2bead/PROG2_2bead/ProgramÖsszeállító.cs",
+		"/home/dwat3r/Downloads/t10/T10J.RSC",
+		"/home/dwat3r/Downloads/t10/T10J.ROM",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/egyszamjatek/FogadoIroda.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/egyszamjatek/Fogado.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/ketteser/Fogado.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/ketteser/FogadoIroda.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/dht/DHTMain.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/dht/DHTNode.java",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/splpld.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/spl4.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/spl3.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/spl.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/pcsp.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/pchm.m",
+		"/run/media/dwat3r/SDCARD/ELTE/8.félév/nummod2/nokhm.m",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/beadando2-leiras.txt",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/DHTRMIInterface.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/test/DHTTest.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/StartDHT.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/DHTRMI.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/dht/DHTFileServer.java",
+		"/home/dwat3r/Downloads/bead/src/bead/test/DHTTest.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/test/DHTTest.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/test/DHTClientLookup.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/test/DHTClientUpload.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/dht/StartDHT.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/p33t/src/bead/dht/DHTFileUtils.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/test/DHTTest.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTServer.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/StartDHT.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTNode.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/DHTServer.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/IDHTServer.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTMain.java",
+		"/home/dwat3r/Documents/bigint-gmp-c/fact.c",
+		"/home/dwat3r/Downloads/ZH2.m",
+		"/home/dwat3r/Downloads/ZH1.m",
+		"/home/dwat3r/Downloads/beadando.cpp",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/Crc16.java",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/Crc16.class",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTMain.class",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTNode.class",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/StartDHT.class",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/DHTServer.class",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/asd/bead/dht/IDHTServer.class",
+		"/home/dwat3r/Documents/petyamester python/berlet.txt",
+		"/home/dwat3r/Documents/petyamester python/eloadas.txt",
+		"/home/dwat3r/Documents/petyamester python/input.txt",
+		"/home/dwat3r/Documents/ELTE IK/4.félév/scriptnyelvek/bead3.py",
+		"/home/dwat3r/Documents/petyamester python/agyhányás.txt",
+		"/home/dwat3r/Documents/ELTE IK/4.félév/scriptnyelvek/bead1.py",
+		"/home/dwat3r/Documents/petyamester python/bead2.py",
+		"/home/dwat3r/Documents/petyamester python/prime.py",
+		"/home/dwat3r/Documents/petyamester python/check2.py",
+		"/home/dwat3r/Documents/ELTE IK/4.félév/scriptnyelvek/bead4.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/Connector.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/scripts/Arpwhohas.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/scripts/Ping.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/scripts/Tcp_seq.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/scripts/UDP_flood.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/IP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/TCP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/Payload.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/ICMP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/Packet.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/UDP.hs",
+		"/home/dwat3r/Documents/zalán/MasterMind.c",
+		"/home/dwat3r/Documents/zalán/integral.c",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/Ethernet.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/DNS.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Network/ARP.hs",
+		"/home/dwat3r/Documents/ELTE IK/6.félév/algo2/Dijkstra.html",
+		"/home/dwat3r/Documents/sanyi_algo2/Ellista.java",
+		"/home/dwat3r/Documents/sanyi_algo2/Dijkstra.java",
+		"/home/dwat3r/Documents/sanyi_algo2/dijkstra.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/bead/dht/Crc16.java",
+		"/home/dwat3r/Documents/sanyi_algo2",
+		"/home/dwat3r/Downloads/asdf/beadando2/1.txt",
+		"/home/dwat3r/Downloads/asdf/beadando2/enor.cpp",
+		"/home/dwat3r/Downloads/asdf/beadando2/enor.h",
+		"/home/dwat3r/Downloads/asdf/beadando2/main.cpp",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcp_window.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcp_streams.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcp_sieve.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcp_seq.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcp_ack.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Scripts/Ping.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Scripts/Arpwhohas.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Connector.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/UDP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/TCP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/Payload.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/Packet.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/IP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/ICMP.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/Ethernet.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/DNS.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Scripts/Tcp_seq.hs",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/hcs/src/Packet/ARP.hs",
+		"/home/dwat3r/Downloads/ping.c",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/arpwhohas.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/tcpfill.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/szakdoga/pcs/pcs-0.7/scripts/udp_echo.py",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/nummod2/beadando/Gauss.m",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/nummod2/beadando/schurK.m",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/nummod2/beadando/teszt.m",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/nummod2/beadando/megmteszt.m",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/nummod2/beadando/dokumentacio.tex",
+		"/home/dwat3r/Documents/sanyi_num2/gram.m",
+		"/home/dwat3r/Documents/sanyi_num2/teszt.m",
+		"/home/dwat3r/Downloads/asdff/Hf2/enor.cpp",
+		"/home/dwat3r/Downloads/asdff/Hf2/seqinfile.cpp",
+		"/home/dwat3r/Downloads/asdff/Hf2/enor.h",
+		"/home/dwat3r/Downloads/asdff/Hf2/main.cpp",
+		"/home/dwat3r/Downloads/asdff/Hf2/seqinfile.h",
+		"/home/dwat3r/Documents/ELTE IK/8.félév/osztott rendszerek/Client.java"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"<open files>",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"flipBO32",
+			"Field ",
+			"Field"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			""
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/Network/ARP.hs",
+					"settings":
+					{
+						"buffer_size": 1889,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1210,
+								1210
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Haskell/Haskell.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "src/Network/Connector.hs",
+					"settings":
+					{
+						"buffer_size": 5608,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3071,
+								3071
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Haskell/Haskell.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1112.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/Network/Ethernet.hs",
+					"settings":
+					{
+						"buffer_size": 970,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								207,
+								207
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Haskell/Haskell.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "src/Network/UDP.hs",
+					"settings":
+					{
+						"buffer_size": 1800,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								416,
+								416
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Haskell/Haskell.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.unsaved_changes":
+	{
+		"height": 100.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"udp.hs",
+				"src/Network/UDP.hs"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
